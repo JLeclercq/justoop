@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <title>plecnoutils/resources/workspace/justoop/classes/classes.js</title>
+        <link rel = "stylesheet" type = "text/css" href = "jsdoc.css" />
+    </head>
+    <body>
+        <h1>Module documentation for plecnoutils/resources/workspace/justoop/classes/classes.js</h1>
+<p>Examples:</p>
+<p>
+</p>
+<p>
+</p>
+<p>  var Animal  = private_class(Object, {
+ 		constructor: function (name)
+ 		{
+ 			this.name = name
+ 		},
+ 		emitSound: function ()
+ 		{
+ 			return this.name;
+ 		}</p>
+<p>
+</p>
+<p>
+</p>
+<p>  var Animal  = private_class(Object, {
+ 		constructor: function (name)
+ 		{
+ 			this.name = name
+ 		},
+ 		emitSound: function ()
+ 		{
+ 			return this.name;
+ 		}</p>
+<p>
+</p>
+<p>
+</p>
+<p>  var Dog  = private_class(Animal, {
+ 		constructor: function (name)
+ 		{
+ 			Dog.__super__.constructor.call(this, name);
+ 			this.sound = "bark";
+ 		},
+ 		emitSound: function ()
+ 		{
+ 			return this.sound + " does the "+ Dog.__super__.emitSound.call(this);
+ 		}</p>
+<p>
+</p>
+<p>
+</p>
+<p> });</p>
+    </body>
+</html>

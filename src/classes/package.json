@@ -1,0 +1,6 @@
+{
+	"requires":["justoop"],
+    "resources" : [
+	    "classes.js", "named_classes.js", "objectex.js"]
+
+}
