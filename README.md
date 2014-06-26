@@ -1,4 +1,4 @@
 justoop
 =======
 
-Light Javascript Object Oriented Library
+Lightweight Object Oriented library for JavaScript
