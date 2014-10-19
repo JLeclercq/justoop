@@ -1,6 +1,6 @@
 {
     "name":"justoop",
-    "requires":["jquery"],
+    "requires":["underscore"],
     "resources" : [
 		    {"class":"RestFiles","extension":"css"},
             "namespace.js"]

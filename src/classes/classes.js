@@ -6,20 +6,19 @@
 		namespace = get(justoop, "namespace"), 
 		isString = get(justoop, "isString"), 
 		assert = get(justoop, "assert"),
-		j = get(justoop, "$"),
 		bind = get(justoop.bind),
-		each = get(j, "each"), 
+		each = get(justoop, "each"), 
 		makeArray = get(justoop, "makeArray"), 
 		isDefined = get(justoop, "isDefined"), 
 		isUndefined = get(justoop, "isUndefined"), 
-		inArray = get(j, "inArray"), Object_prototype = Object.prototype,
-		isFunction = get(j, "isFunction"), 
+		contains = get(justoop, "contains"), Object_prototype = Object.prototype,
+		isFunction = get(justoop, "isFunction"), 
 		getErrorStack = get(justoop, "getErrorStack"), 
 		js_line_property = get(justoop, "js_line_property"), 
 		property_name = get(justoop, "property_name"), 
 		debug_info = get(justoop, "debug_info"), 
 		log = get(justoop.log),
-		package_property = get(justoop.package_property), 
+		package_property = justoop.package_property, 
 		current_package_property = get(justoop.current_package_property);
 		
 	function attributes(obj) {
@@ -173,7 +172,7 @@
 				c[interfaces_property].push(other);
 				var o = {};
 				each(attributes(other), function(idx, name) {
-					if (inArray(name, reserved_methods) == -1)
+					if (!contains(reserved_methods, name))
 					{
 						var value = other[name];
 						if (isFunction(value))
@@ -309,7 +308,6 @@
 		Subclasser : Subclasser,
 		super_property : super_property,
 		isObject : isObject,
-		isFunction : isFunction,
 		isClass: isClass,
 		implements_ : implements_
 	});

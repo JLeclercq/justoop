@@ -1,38 +1,46 @@
- /* filename = justoop namespace.js */
-(function(globals, jQuery) {
+/* filename = justoop namespace.js */
+(function(globals) {
     "use strict";
-    var justoop = globals.justoop || {}, 
-    each = get(jQuery.each), 
-    extend = get(jQuery.extend), 
-    map = get(jQuery.map), 
-    isPlainObject = get(jQuery.isPlainObject), 
-    sliceArray = get(Array.prototype.slice), 
-    isFunction = get(jQuery.isFunction),
-    makeArray = get(jQuery.makeArray), 
-    js_line_property = "__js_line__", 
-    property_name = "__name__", 
-    package_property = "__package__", 
-    current_package_property = "__current_package_name__", 
-    current_package = justoop[current_package_property], 
-    package_name = current_package, 
-    ns_name = "justoop", 
-    jQuery_proto = jQuery.prototype;
-    globals[ns_name] = globals[ns_name] || justoop;
-    function smartjQuery(elem) 
+    
+    
+    function makeArray( arr ) {
+        var res =[];
+        each (arr, function(i, e){
+            res.push(e);
+        })
+        return res;
+	}
+
+    function getTracer(name) 
     {
-        if (jQuery_proto.isPrototypeOf(elem))
-            return elem;
-        else
-            return jQuery(elem);
+        var func = function() {
+        };
+        if (globals.console) 
+        {
+            func = function() 
+            {
+                try
+                {
+                    console[name].apply(console, makeArray(arguments));
+                }
+                catch(e)
+                {
+                    // IE workaround
+                    var message = makeArray(arguments).join(" ");
+                    console.log(message);
+                }
+            };
+        }
+        return func;
     }
     
-    each(jQuery, function(i, e) {
-        smartjQuery[i] = e;
-    });
+    var log = getTracer("log");
+    var error = getTracer("log");
+    
     
     function assert(expression, msg) {
         if (!expression) {
-            var msg = sliceArray.call(arguments, 1);
+            var msg = Array.prototype.slice.call(arguments, 1);
             var m = msg.join(" ");
             error(m);
             debugger;
@@ -40,8 +48,39 @@
         }
     }
     
+    function isUndefined(obj)
+    {
+        return typeof obj == "undefined"; 
+    }
+    var require = globals.require;
+    if (isUndefined(require))
+        require = function(module_name)
+        {
+            assert(_, module_name, "not included");
+            return _;
+        }
+    
+    var underscore = require("underscore");
+    
+    var justoop = globals.justoop || {}, 
+    _each = get(underscore.each), 
+    extend = get(underscore.extend), 
+    map = get(underscore.map), 
+    isFunction = get(underscore.isFunction),
+    contains = get(underscore.contains),
+    keys = get(underscore.keys),
+    js_line_property = "__js_line__", 
+    property_name = "__name__", 
+    package_property = "__package__", 
+    current_package_property = "__current_package_name__", 
+    current_package = justoop[current_package_property], 
+    package_name = current_package, 
+    ns_name = "justoop";
+    
+    globals[ns_name] = globals[ns_name] || justoop;
+    
     function isString(value) {
-        return typeof value == "string";
+        return typeof value == "string" || String.prototype.isPrototypeOf(value);
     }
     
     function isUndefined(val) {
@@ -113,6 +152,27 @@
         return res;
     }
     
+    function each(obj, iteratee) 
+    {
+        if (obj == null) return obj;
+        var i, length = obj.length;
+        if (length === +length) {
+          for (i = 0; i < length; i++) {
+            var res = iteratee(i, obj[i], obj);
+            if (res === false)
+                break;
+          }
+        } else {
+          var k = keys(obj);
+          for (i = 0, length = k.length; i < length; i++) {
+            var res = iteratee( k[i],obj[k[i]], obj);
+            if (res === false)
+                break;
+          }
+        }
+        return obj;
+    }
+    
     function namespace(namespace) {
         var o, d;
         each(arguments, function(i, v) 
@@ -171,6 +231,35 @@
         }
         return res;
     }
+    
+    function isPlainObject( obj ) {
+		// Not plain objects:
+		// - Any object or value whose internal [[Class]] property is not "[object Object]"
+		// - DOM nodes
+		// - window
+		//if ( typeof  obj  !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
+		if ( typeof  obj  !== "object" ) {
+			return false;
+		}
+
+		// Support: Firefox <20
+		// The try/catch suppresses exceptions thrown when attempting to access
+		// the "constructor" property of certain host objects, ie. |window.location|
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=814622
+		try {
+			if ( obj.constructor &&
+					!hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
+				return false;
+			}
+		} catch ( e ) {
+			return false;
+		}
+
+		// If the function hasn't returned already, we're confident that
+		// |obj| is a plain object, created by {} or constructed with new Object
+		return true;
+	}
+    
     var publish = justoop.publish = function(origin, newAPI) 
     {
         assert(Namespace_isPrototypeOf(origin) || isPlainObject(origin));
@@ -179,17 +268,28 @@
             {
                 assert(!origin[name], name, "already defined");
                 assert(isDefined(value), "undefined  value for", name);
-                if (debug_info && !value[js_line_property]) {
+                if (debug_info && value && !value[js_line_property]) {
                     try {
                         throw new Error("");
                     } catch (e) {
                         var stack = getErrorStack(e);
-                        value[js_line_property] = stack.split("\n")[stack_depth];
+                        try{
+                            value[js_line_property] = stack.split("\n")[stack_depth];
+                        }
+                        catch(e)
+                        {
+                            
+                        }
                     }
                 }
-                if (!value[package_property])
-                    value[package_property] = justoop[current_package_property];
-                if (value.__publish__)
+                if (value && !value[package_property])
+                    try{
+                     value[package_property] = justoop[current_package_property];
+                    }
+                    catch (e){
+                        
+                    }
+                if (value && value.__publish__)
                     value = value.__publish__(origin, name);
                 origin[name] = value;
             }
@@ -198,23 +298,6 @@
     };
     
     var ns = namespace(ns_name);
-    
-    function getTracer(name) 
-    {
-        var func = function() {
-        };
-        if (window.console) 
-        {
-            func = function() 
-            {
-                console[name].apply(console, makeArray(arguments));
-            };
-        }
-        return func;
-    }
-    
-    var log = getTracer("log");
-    var error = getTracer("log");
     
     var ArrayProto = Array.prototype, FuncProto = Function.prototype, nativeBind = FuncProto.bind, slice = ArrayProto.slice;
     
@@ -238,8 +321,20 @@
     }
     ;
     
-    if (window.console)
-        log = bind(console.log, console);
+    if (globals.console)
+    {
+        try {
+            log = bind(console.log, console);
+        }
+        catch(e)
+        {
+            log = function(){
+             var args = makeArray(arguments);
+             var msg = args.join(" ");
+             console.log(msg);
+            }
+        }
+    }
     
     function getObject(classname_or_class) 
     {
@@ -247,7 +342,7 @@
         {
             var splitted = classname_or_class.split("."), 
             len = splitted.length, 
-            res, ns = window;
+            res, ns = globals;
             
             for (var i = 0; i < len; i++) 
             {
@@ -276,7 +371,7 @@
         var res = true;
         each(members, function(i, name) {
             var val = object[name];
-            res = res & isDefined(val);
+            res = res && isDefined(val);
             if (!res)
                 return false;
         
@@ -299,11 +394,12 @@
         isDefined: isDefined,
         get: get,
         getObject: getObject,
-        inArray: jQuery.inArray,
-        each: jQuery.each,
-        map: jQuery.map,
+        contains: contains,
+        each: each,
+        map: map,
         log: log,
         error: error,
+        isFunction : isFunction,
         makeArray: makeArray,
         debug_info: debug_info,
         js_line_property: js_line_property,
@@ -313,8 +409,7 @@
         hasMembers: hasMembers,
         existingNamespace: existingNamespace,
         isUndefined: isUndefined,
-        $: smartjQuery,
         assert: assert
     });
 
-})(window, jQuery);
+})(this);

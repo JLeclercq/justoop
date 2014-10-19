@@ -1,11 +1,10 @@
 (function (justoop)
 {
 	var get = justoop.get,
-	j = get(justoop.$),
 	publish = get(justoop.publish), 
 	public_class = get(justoop.public_class),
-	makeArray = get(j.makeArray),
-	each = get(j.each),
+	makeArray = get(justoop.makeArray),
+	each = get(justoop.each),
 	isFunction = get(justoop.isFunction),
 	assert = get(justoop.assert),
 	isString = get(justoop.isString),
