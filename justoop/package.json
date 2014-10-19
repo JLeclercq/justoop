@@ -1,0 +1,12 @@
+{
+  "name": "justoop",
+  "version": "0.0.1",
+  "description": "Object Oriented Javascript Framework",
+  "main": "justoop.js",
+  "dependencies":{"underscore":">=1.7.0"},
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Oreste Notelli",
+  "license": "MIT"
+}
