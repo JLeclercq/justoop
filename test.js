@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 (function (globals)
 {
     var justoop = require("justoop").justoop;
@@ -48,6 +46,6 @@
     
     log("dog", dog.emitSound())
     log("cat", cat.emitSound());
-
+    debugger;
 
 })(this);

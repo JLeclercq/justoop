@@ -1,6 +1,6 @@
 # IPython log file
 
 
-found
-found.name
-partial_url
+app.static_folder
+app.static_url_path
+get_ipython().magic(u'pinfo app.run')

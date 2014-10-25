@@ -1,25 +1,24 @@
 /* filename = justoop justoop.js */
-(function() {
-	var globals;
-	var require;
+(function(globals) {
+    var require_ = module.require;
+	var exports_ = module.exports;
+	/*
+    
+    var a=typeof require_=="function"&&require_;
+    if (!a)
+    {
+    	globals.require = function(module_name)
+    	{
+    		var underscore = window._;
+    		if (!underscore)
+    			throw new Error("underscore not defined");
+    		return underscore;
+    	}
 
-	try {
-		globals = window;
-		require = function(module_name) {
-			if (!window._)
-				throw new Exception( "underscore not included");
-			return window._;
-		}
-	} catch (e) {
-		try {
-			globals = exports;
-			require = module.require;
-		} catch (e) {
-		}
-
-	}
-
-	(function(globals, require) {
+    }
+    */
+    
+    (function(globals, require, exports) {
 
 		function makeArray(arr) {
 			var res = [];
@@ -71,8 +70,9 @@
 		var underscore = require("underscore");
 		var justoop = globals.justoop || {}, _each = get(underscore.each), extend = get(underscore.extend), map = get(underscore.map), isFunction = get(underscore.isFunction), contains = get(underscore.contains), keys = get(underscore.keys), js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__", current_package_property = "__current_package_name__", current_package = justoop[current_package_property], package_name = current_package, ns_name = "justoop";
 
-		globals[ns_name] = justoop;
-
+		//globals[ns_name] = justoop;
+        globals.justoop = justoop;
+        
 		function isString(value) {
 			return typeof value == "string"
 					|| String.prototype.isPrototypeOf(value);
@@ -248,44 +248,50 @@
 			// Object
 			return true;
 		}
+        var publish = justoop.publish = function(origin, newAPI) {
+            if (origin.__publish__)
+            {
+                origin.__publish__(newAPI);
+            }
+            else
+            {
+                //assert(Namespace_isPrototypeOf(origin) || isPlainObject(origin));
+                each(
+                        newAPI,
+                        function(name, value) {
+                            if (name != "__publish__") {
+                                assert(!origin[name], name, "already defined");
+                                assert(isDefined(value), "undefined  value for",
+                                        name);
+                                if (debug_info && value && !value[js_line_property]) {
+                                    try {
+                                        throw new Error("");
+                                    } catch (e) {
+                                        var stack = getErrorStack(e);
+                                        try {
+                                            value[js_line_property] = stack
+                                                    .split("\n")[stack_depth];
+                                        } catch (e) {
 
-		var publish = justoop.publish = function(origin, newAPI) {
-			assert(Namespace_isPrototypeOf(origin) || isPlainObject(origin));
-			each(
-					newAPI,
-					function(name, value) {
-						if (name != "__publish__") {
-							assert(!origin[name], name, "already defined");
-							assert(isDefined(value), "undefined  value for",
-									name);
-							if (debug_info && value && !value[js_line_property]) {
-								try {
-									throw new Error("");
-								} catch (e) {
-									var stack = getErrorStack(e);
-									try {
-										value[js_line_property] = stack
-												.split("\n")[stack_depth];
-									} catch (e) {
+                                        }
+                                    }
+                                }
+                                if (value && !value[package_property])
+                                    try {
+                                        value[package_property] = justoop[current_package_property];
+                                    } catch (e) {
 
-									}
-								}
-							}
-							if (value && !value[package_property])
-								try {
-									value[package_property] = justoop[current_package_property];
-								} catch (e) {
-
-								}
-							if (value && value.__publish__)
-								value = value.__publish__(origin, name);
-							origin[name] = value;
-						}
-					});
-			return origin;
+                                    }
+                                if (value && value.__publish__)
+                                    value = value.__publish__(origin, name);
+                                origin[name] = value;
+                            }
+                        });
+            }
+            return origin;
 		};
-
-		var ns = namespace(ns_name);
+        
+        var ns = namespace(ns_name);
 
 		var ArrayProto = Array.prototype, FuncProto = Function.prototype, nativeBind = FuncProto.bind, slice = ArrayProto.slice;
 
@@ -751,7 +757,7 @@
 		})();
 
 		var res = publish(ns, {
-			bind : bind,
+            bind : bind,
 			allSubclasses : _allSubclasses,
 			allSuperclasses : _allSuperclasses,
 			stringify : stringify,
@@ -789,7 +795,9 @@
 			public_class : public_class,
 			PublicSubclasser : PublicSubclasser
 		});
+        exports = ns;
+        exports.publish = publish;
 
-	})(globals, require);
+	})(globals, require_, exports_);
 
-})()
+})(this);
