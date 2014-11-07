@@ -1,22 +1,32 @@
 /* filename = justoop justoop.js */
-(function(globals) {
-    var require_ = module.require;
-	var exports_ = module.exports;
-	/*
+"use strict";
+        
+(function() {
+    var require_ , exports_, globals;
     
-    var a=typeof require_=="function"&&require_;
-    if (!a)
+      var has_module = typeof module != "undefined";
+      var has_require = typeof require != "undefined";
+   //var a=typeof require_=="function"&&require_;
+    if (!has_require)
     {
-    	globals.require = function(module_name)
+	if (typeof window != "undefined")
+    	require_ = window.require = function(module_name)
     	{
     		var underscore = window._;
     		if (!underscore)
     			throw new Error("underscore not defined");
     		return underscore;
-    	}
+    	};
+        globals = window;
+        exports_ ={};
 
     }
-    */
+    else
+    {
+        require_ = module.require;
+        exports_ = module.exports;
+        globals = global;
+    }
     
     (function(globals, require, exports) {
 
@@ -166,7 +176,7 @@
 
 		function namespace(namespace) {
 			var o, d;
-			each(arguments, function(i, v) {
+            each(arguments, function(i, v) {
 
 				d = v.split(".");
 				var name = d[0];
@@ -185,6 +195,7 @@
 					o = o2;
 				});
 			});
+            
 			return o;
 		}
 
@@ -755,8 +766,7 @@
 			});
 
 		})();
-
-		var res = publish(ns, {
+        var res = publish(ns, {
             bind : bind,
 			allSubclasses : _allSubclasses,
 			allSuperclasses : _allSuperclasses,
@@ -795,9 +805,9 @@
 			public_class : public_class,
 			PublicSubclasser : PublicSubclasser
 		});
-        exports = ns;
+        extend(exports , ns);
         exports.publish = publish;
+        //return exports;
 
 	})(globals, require_, exports_);
-
-})(this);
+})();

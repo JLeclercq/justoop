@@ -16,9 +16,9 @@ module.exports = function (grunt) {
                 sourceMap: true,
                 banner: '/*! <%= pkg.name %>-r <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
-            dist: {
+	    dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': ['<%= browserify.dist.dest %>']
+                    'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
                 }
             }
         },
@@ -35,13 +35,9 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-browserify');
     //grunt.registerTask('test', [ ]);
 
-    grunt.registerTask('default', ['concat',  'browserify', 'uglify',]);
+    grunt.registerTask('default', ['concat',  'uglify',]);
 
 };

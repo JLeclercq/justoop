@@ -1,7 +1,7 @@
-(function (globals)
+(function ()
 {
-    var justoop = require("justoop").justoop;
-    
+    //var justoop = require("justoop").justoop;
+    require("justoop");
     var get = justoop.get,
     subclass = get(justoop.subclass);
     
@@ -48,4 +48,4 @@
     log("cat", cat.emitSound());
     debugger;
 
-})(this);
+})();
