@@ -40,7 +40,8 @@
                                 if (cmpName)
                                 {
                                         assert(!result[cmpName], cmpName, "already defined");
-                                        result[cmpName] = component;
+                                        if (parentElem[0] != component.el()[0])
+                                            result[cmpName] = component;
                                 }
                         });
                         var subclassComponentClass = this_.defaultSubclassComponent();
@@ -53,7 +54,8 @@
                                         attachComponentToDom.call(this_, elem, cmp);
                                         var cmpName = this_.getComponentName(elem);
                                         assert(!result[cmpName], cmpName, "already defined");
-                                        result[cmpName] = cmp;
+                                        if (parentElem[0] != cmp.el()[0])
+                                            result[cmpName] = cmp;
                                 }
                                 
                         });
@@ -68,7 +70,7 @@
                 
                 function allComponents (parentElem)
                 {
-                        return parentElem.find(this.componentsSelector()).not("."+attachedClass);
+                        return parentElem.add(parentElem.find(this.componentsSelector()).not("."+attachedClass));
                 }
 
                 function getComponentName(element)
@@ -261,9 +263,10 @@
                                 return this._el;
                         }
                 });
+                
                 extend(Class_, {createCSSClass:createCSSClass, findAll:findAll});
                 each(["css", "append", "remove", "addClass", "removeClass","toggleClass","hasClass",
-                                "data", "attr", "prop", "show", "hide", "closest",
+                                "data", "attr", "prop", "show", "hide", "closest","keyup", "keydown",
                                 "children", "width", "height", "text", "html","submit",
                                 "val","change","click", "on", "off", "find", "parent",
                                 "parents", "parentsUntil"], function (i, name){
