@@ -22,6 +22,7 @@
             this._d = target;
             var this_ = this;
             this._fails =[];
+            this._dones=[];
             each(this._d, function (name, func){
                 if (isFunction(func))
                 {
@@ -56,13 +57,9 @@
                             callb( jqXHR, txt, res);
                    });
                 });
-                _d.done(function(data, textStatus, jqXHR)
-                {
-                    processErrorOn200(data, textStatus, jqXHR, listener, this_, callback);
-                })
                 return this;
             }
-            
+
             function processErrorOn200(data, textStatus, jqXHR, listener, this_,  callback)
             {
                     if (data.error)
@@ -75,7 +72,9 @@
                     else
                     {
                         listener.onEnd(["done.result"].concat(makeArray(arguments)));
-                        callback(data.result, textStatus, jqXHR);
+                        each(this_._dones, function(i, callb){
+                            callb( data.result, textStatus, jqXHR);
+                        });
                     }
             }
             
@@ -83,6 +82,7 @@
             {
                 assert(callback);
                 var this_ = this;
+                this_._dones.push(callback);
                 this._d.done (function ( data, textStatus, jqXHR){
                     processErrorOn200(data, textStatus, jqXHR, listener, this_,  callback);
                 });
