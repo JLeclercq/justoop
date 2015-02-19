@@ -1,13 +1,9 @@
 /* filename = justoop/rpc rpc.js */
-/* filename = justoop/rpc rpc.js */
-/* filename = justoop/rpc rpc.js */
-/* filename = justoop/rpc rpc.js */
-/* filename = justoop/rpc rpc.js */
-/* filename = justoop/rpc rpc.js */
-(function(justoop) {
+(function(justoop, _, jQuery) {
     "use strict";
-    var get = justoop.get, j = get(justoop.$),
-    map = get(j.map),
+    var get = justoop.get,
+    map = get(_.map),
+    j = jQuery,
     assert = get(justoop.assert), 
     each = get(justoop.each),
     isFunction = get(justoop.isFunction),
@@ -53,20 +49,22 @@
                 assert(callback);
                 this._fails.push(callback);    
                 var this_ = this;
-                this._d.fail (function(jqXHR, txt, res){
+                var _d = this._d;
+                _d.fail (function(jqXHR, txt, res){
                     listener.onEnd(["done.error"].concat(makeArray(arguments)));
                     each(this_._fails, function(i, callb){
                             callb( jqXHR, txt, res);
                    });
                 });
+                _d.done(function(data, textStatus, jqXHR)
+                {
+                    processErrorOn200(data, textStatus, jqXHR, listener, this_, callback);
+                })
                 return this;
             }
             
-            this.done = function (callback)
+            function processErrorOn200(data, textStatus, jqXHR, listener, this_,  callback)
             {
-                assert(callback);
-                var this_ = this;
-                this._d.done (function ( data, textStatus, jqXHR){
                     if (data.error)
                     {
                         listener.onEnd(["done.error"].concat(makeArray(arguments)));
@@ -76,12 +74,21 @@
                     }
                     else
                     {
-                        listener.onEnd(["done.response"].concat(makeArray(arguments)));
-                        callback(data.response, textStatus, jqXHR);
+                        listener.onEnd(["done.result"].concat(makeArray(arguments)));
+                        callback(data.result, textStatus, jqXHR);
                     }
+            }
+            
+            this.done = function (callback)
+            {
+                assert(callback);
+                var this_ = this;
+                this._d.done (function ( data, textStatus, jqXHR){
+                    processErrorOn200(data, textStatus, jqXHR, listener, this_,  callback);
                 });
                 return this;
             };
+
             
         }
         return subclass({
@@ -162,4 +169,4 @@
         Server : Server,
         checkListener: checkListener
     })
-})(justoop);
+})(justoop, _, jQuery);

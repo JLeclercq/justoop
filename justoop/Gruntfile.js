@@ -7,7 +7,7 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['src/**/*.js'],
+                src: ['src/justoop.js', 'components.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
