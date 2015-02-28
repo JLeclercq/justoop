@@ -7,18 +7,20 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['src/justoop.js', 'components.js'],
+                src: ['src/justoop.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
         uglify: {
             options: {
                 sourceMap: true,
+                mangle:["eval"],
+                reserved:["f_"],
                 banner: '/*! <%= pkg.name %>-r <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
 	    dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                    'dist/<%= pkg.name %>.min.js': ["<%= concat.dist.dest %>"]
                 }
             }
         },
