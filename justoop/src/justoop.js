@@ -135,6 +135,23 @@
             }
             return obj;
         }
+        /**
+        * create a global namespace in similart way to the java packages or python modules
+        * @param {string} [namespace] the namspace dotted name
+        * 
+        * Examples:
+        * var ns = namespace("a.b.c");
+        * var ns2 = namespace("a.b.c");
+        * 
+        * ns == n2 == a.b.c
+        *
+        * 
+        * var ns3 = namespace("a.b");
+        * 
+        * ns3 == a.b 
+        * ns3.c == ns == ns2 == a.b.c
+        *
+        */
         function namespace(namespace) {
             var o, d;
             each(arguments, function(i, v) {
@@ -189,13 +206,38 @@
             }
             return true;
         }
-        var publish = justoop.publish = function(origin, newAPI) {
-            if (origin.__publish__) {
-                origin.__publish__(newAPI);
+        /**
+         * Publish a function, class, or variable in the given namespace,
+         * check that they are not already been published to avoid unintended 
+         * overwriting 
+         * @param {object} [target]     target namespace
+         * @param {object} [newAPI]     new api object
+         * 
+         * Examples:
+         * 
+         * var ns = namespace("mynamespace");
+         * 
+         * function echo(msg)
+         * {
+         *      return msg;
+         * }
+         *   
+         * 
+         * publish(ns, {
+         *              echo:echo
+         *       });
+         * 
+         * 
+         * mynamespace.echo(3) == 3;
+         * 
+         */
+        var publish = justoop.publish = function(target, newAPI) {
+            if (target.__publish__) {
+                target.__publish__(newAPI);
             } else {
                 each(newAPI, function(name, value) {
                     if (name != "__publish__") {
-                        assert(!origin[name], name, "already defined");
+                        assert(!target[name], name, "already defined");
                         assert(isDefined(value), "undefined  value for", name);
                         if (debug_info && value && !value[js_line_property]) {
                             try {
@@ -210,12 +252,12 @@
                         if (value && !value[package_property]) try {
                             value[package_property] = justoop[current_package_property];
                         } catch (e) {}
-                        if (value && value.__publish__) value = value.__publish__(origin, name);
-                        origin[name] = value;
+                        if (value && value.__publish__) value = value.__publish__(target, name);
+                        target[name] = value;
                     }
                 });
             }
-            return origin;
+            return target;
         };
         var ns = namespace(ns_name);
         var ArrayProto = Array.prototype, FuncProto = Function.prototype, nativeBind = FuncProto.bind, slice = ArrayProto.slice;
@@ -421,7 +463,7 @@
             };
             return Subclasser;
         }();
-        //justoop = namespace("justoop");
+        
         var PublicSubclasser = function(superClass) {
             function constructor(name) {
                 this.__className = name;
@@ -463,7 +505,7 @@
                 __class_registry[name] = res;
                 return res;
             }
-            return private_class(superClass, {
+            return subclass(superClass, {
                 constructor: constructor,
                 allClasses: allClasses,
                 _createFirstConstructor: _createFirstConstructor,
@@ -484,7 +526,107 @@
                 return new_class;
             } else return this;
         };
-        function private_class() {
+        
+        /**
+         * Create a Javascript class
+         * 
+         * Examples:
+         * 
+         * var Animal = (function (Base) {
+         *        function doSound() {
+         *           return "animal";
+         *        }
+         * 
+         *        function walk() {}
+         * 
+         *
+         *        return subclass({
+         *            doSound: doSound,
+         *            paws_number: 4,
+         *            tail: false,
+         *           walk: walk
+         *        }, Base);
+         *   })(Object);
+         * 
+         *    var animal = new Animal();
+         *    animal.doSound() == "animal";
+         *    animal.tail == false;
+         *    animal.paws_number == 4;
+         *    implements_(animal, Object)== true;
+         *    implements_(animal, Animal)== true;
+         * 
+         * 
+         *  var Cat = (function (Base){
+         *
+         *          function doSound() {
+         *                  return "meow";
+         *          }
+         *
+         *          function dopurr() {
+         *              return "purr";
+         *           }
+         *           return subclass({
+         *                   tail: true,
+         *                   doSound: doSound,
+         *                   dopurr: dopurr
+         *               }, Base);
+         *    })(Animal);
+         *       
+         *
+         *  var cat = new Cat();
+         * 
+         *    cat.doSound() == "meow";
+         *    animal.tail == true;
+         *    animal.paws_number == 4;
+         *    implements_(cat, Cat) == true;
+         *    implements_(cat, Animal) == true;
+         *    implements_(cat, Object) == true;
+         * 
+         * 
+         *   var Man =  function (Base){
+         *      function doSound() {
+         *       return "hello";
+         *      }
+         *
+         *      function doWrite() {
+         *       return "i wrote  " + this.doSound();
+         *      }
+         *    return subclass({
+         *           paws_number: 2,
+         *           tail: false,
+         *           doSound: doSound,
+         *           doWrite: doWrite
+         *       }, Base);
+         * })(Animal);
+         *
+         * 
+         * var CatWoman = (function (Base1, Base2) {
+         *       function doSuperPowers() {
+         *           return "you can kill me 8 times, but i am still alive";
+         *       }
+         *
+         *       function doSound() {
+         *           return Man.prototype.doSound.call(this) + " - " + Cat.prototype.doSound.call(this);
+         *       }
+         *
+         *       return subclass({
+         *           doSuperPowers: doSuperPowers,
+         *           paws_number: 2,
+         *           doSound: doSound
+         *       }, Base1, Base2);
+         *   })(Cat, Man);
+         * 
+         *  var cat = new Cat();
+         *  var catWoman = new CatWoman();
+         *  catWoman.tail == true;
+         *  (catWoman.doSound() == man.doSound() + " - " + cat.doSound()) == true;
+         *  implements_(catWoman, Cat) == true;
+         *  implements_(catWoman, Man) == true;
+         *  implements_(catWoman, Animal) == true;
+         *  implements_(catWoman, Object) == true;
+         */
+        
+        function subclass() {
             var subclasser = new Subclasser();
             return subclasser.subclass.apply(subclasser, makeArray(arguments));
         }
@@ -541,7 +683,7 @@
             function allSuperclasses() {
                 return _allSuperclasses(this);
             }
-            return private_class({
+            return subclass({
                 bind: bind,
                 allSubclasses: allSubclasses,
                 allSuperclasses: allSuperclasses
@@ -577,8 +719,7 @@
             isUndefined: isUndefined,
             assert: assert,
             getClass: getObject,
-            private_class: private_class,
-            subclass: private_class,
+            subclass: subclass,
             Subclasser: Subclasser,
             super_property: super_property,
             isObject: isObject,
