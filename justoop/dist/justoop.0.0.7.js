@@ -1,3 +1,4 @@
+/*  justoop 0.0.7 . Lightweight Object Oriented Library For Javascript */
 "use strict";
 
 (function() {
@@ -232,12 +233,12 @@
          * 
          */
         var publish = justoop.publish = function(target, newAPI) {
-            if (target.__publish__) {
-                target.__publish__(newAPI);
+            if (origin.__publish__) {
+                origin.__publish__(newAPI);
             } else {
                 each(newAPI, function(name, value) {
                     if (name != "__publish__") {
-                        assert(!target[name], name, "already defined");
+                        assert(!origin[name], name, "already defined");
                         assert(isDefined(value), "undefined  value for", name);
                         if (debug_info && value && !value[js_line_property]) {
                             try {
@@ -252,12 +253,12 @@
                         if (value && !value[package_property]) try {
                             value[package_property] = justoop[current_package_property];
                         } catch (e) {}
-                        if (value && value.__publish__) value = value.__publish__(target, name);
-                        target[name] = value;
+                        if (value && value.__publish__) value = value.__publish__(origin, name);
+                        origin[name] = value;
                     }
                 });
             }
-            return target;
+            return origin;
         };
         var ns = namespace(ns_name);
         var ArrayProto = Array.prototype, FuncProto = Function.prototype, nativeBind = FuncProto.bind, slice = ArrayProto.slice;

@@ -2,46 +2,54 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        clean: ["dist/*"],
         concat: {
             options: {
-                separator: ';'
+                separator: ';',
+                banner:"/*  <%= pkg.name %> <%= pkg.version%> . Lightweight Object Oriented Library For Javascript */\n"
             },
             dist: {
-                src: ['src/**/*.js'],
-                dest: 'dist/<%= pkg.name %>.js'
+                src: ['src/justoop.js'],
+                dest: 'dist/<%= pkg.name %>.<%= pkg.version%>.js'
+            },
+            with_underscore: {
+                src: ['src/justoop.js', 'node_modules/underscore/underscore.js'],
+                dest: 'dist/<%= pkg.name %>.<%= pkg.version%>-with-underscore.js'
             }
         },
         uglify: {
             options: {
-                sourceMap: true,
-                banner: '/*! <%= pkg.name %>-r <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                sourceMap: false,
+                mangle:["eval"],
+                reserved:["f_"],
+                banner: '/*! <%= pkg.name %> <%= pkg.version%> -r <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
-            dist: {
+	    dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': ['<%= browserify.dist.dest %>']
+                    'dist/<%= pkg.name %>.<%= pkg.version%>.min.js': ["<%= concat.dist.dest %>"],
+                    'dist/<%= pkg.name %>.<%= pkg.version%>-with-underscore.min.js': ["<%= concat.with_underscore.dest %>"]
                 }
             }
-        },
+        }
+        /*,
         browserify: {
             options:{
                 exclude:["external"]
             },
             dist: {
-                src: ['src/**/*.js'],
-                dest: 'dist/<%= pkg.name %>-browser.js'
+                src: ['src/justoop.js'],
+                dest: 'dist/<%= pkg.name %>-with-underscore.js'
             }
             
-        }
+        }*/
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    //grunt.loadNpmTasks('grunt-browserify');
     //grunt.registerTask('test', [ ]);
 
-    grunt.registerTask('default', ['concat',  'browserify', 'uglify',]);
+    grunt.registerTask('default', ['clean', 'concat',  'uglify',]);
 
 };

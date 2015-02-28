@@ -1,3 +1,3 @@
-var t = require("./justoop");
+var t = require("justoop");
 
-console.log(t);
+console.log("fico",t.publish == justoop.publish);
