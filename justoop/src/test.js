@@ -1,4 +1,4 @@
-var j = require("./src/justoop");
+var j = require("justoop");
 (function (justoop) {
     var get = justoop.get,
     publish = get(justoop.publish),
@@ -191,9 +191,7 @@ var j = require("./src/justoop");
         Cat.prototype.dopurr = oldpurr;
         test.done();
     }
-    
-    
-    
+
     publish(exports, {
         testGet: testGet,
         testMultipleInheritance: testMultipleInheritance,
@@ -201,4 +199,4 @@ var j = require("./src/justoop");
         testSimpleClass: testSimpleClass,
         testSimpleInheritance: testSimpleInheritance
     })
-})(j);
+})(justoop);
