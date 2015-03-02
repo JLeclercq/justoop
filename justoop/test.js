@@ -1,4 +1,4 @@
-var j = require("./src/justoop");
+var j = require("./dist/justoop.0.0.7.min.js");
 (function (justoop) {
     var get = justoop.get,
     publish = get(justoop.publish),
@@ -175,6 +175,8 @@ var j = require("./src/justoop");
         test.ok(implements_(catWoman, Cat));
         test.ok(catWoman.paws_number == 2);
         test.ok(catWoman.tail == true);
+        test.ok(catWoman.dopurr() == "purr");
+        test.ok(catWoman.doSuperPowers() == "you can kill me 8 times, but i am still alive");
         var oldWriteFunction = Man.prototype.doWrite;
         Man.prototype.doWrite = function()
         {

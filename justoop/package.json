@@ -1,6 +1,6 @@
 {
   "name": "justoop",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Object Oriented Javascript Framework",
   "main": "./src/justoop.js",
   "repository": {

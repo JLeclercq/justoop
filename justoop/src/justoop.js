@@ -318,9 +318,8 @@
         }
         function attributes(obj) {
             var res = [];
-            each(obj, function(name, value) {
-                res.push(name);
-            });
+            for (var attr in obj)
+                res.push(attr);
             return res;
         }
         var Array_prototype = Array.prototype;
