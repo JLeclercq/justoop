@@ -142,13 +142,13 @@ var j = require("justoop");
         var Cat = defineCat();
         cat = new Cat();
         test.ok(cat.doSound() == "meow", "cat doeas not mew");
-        test.ok(cat.dopurr() == "purr", "cat doeas not purr");
+        test.ok(cat.dopurr() == "purr", "cat doeas not purr: '"+cat.dopurr() +"'");
         test.ok(cat.paws_number == 4, "cat.paws_number == 4");
         test.ok(cat.tail == true, "cat without tails");
         test.ok(implements_(cat, Cat), "the cat is not Cat");
         test.ok(implements_(cat, Animal), "the cat is not an Animal");
         test.ok(implements_(cat, Object), "the cat is not an Object");
-        test.ok(cat.dopurr() == "purr", "cat doeas not purr");
+        test.ok(cat.dopurr() == "purr", "cat doeas not purr: "+cat.dopurr() );
         var catWithoutTail = new Cat();
         catWithoutTail.tail = false;
         test.ok(catWithoutTail.tail == false, "catcatWithoutTail with tail");
@@ -161,7 +161,7 @@ var j = require("justoop");
         test.done();
     }
 
-    function testMultipleInheritance(test) {
+    function testZMultipleInheritance(test)  {
         var implements_ = get(justoop.implements_);
         var Animal = defineAnimal();
         var Cat = defineCat();
@@ -174,18 +174,31 @@ var j = require("justoop");
         test.ok(implements_(catWoman, Man));
         test.ok(implements_(catWoman, Cat));
         test.ok(catWoman.paws_number == 2);
-        test.ok(catWoman.tail == true);
+        test.ok(catWoman.tail == true," tail:"+ catWoman.tail);
         var oldWriteFunction = Man.prototype.doWrite;
+        var oldpurr = Cat.prototype.dopurr;
+        /*
+        
         Man.prototype.doWrite = function()
         {
             return "write function changed";
         }
-        var oldpurr = Cat.prototype.dopurr;
         Cat.prototype.dopurr = function()
         {
             return "purr changed";
         }
-        test.ok(catWoman.doWrite() == "write function changed");
+        */
+        Man.prototype.doWrite = function()
+        {
+            return "write function changed";
+        }
+        Cat.prototype.dopurr = function()
+        {
+            return "purr changed";
+        }
+        var res = catWoman.doWrite()
+        console.log(res);
+        test.ok(res == "write function changed", "found:"+ res);
         test.ok(catWoman.dopurr() == "purr changed");
         Man.prototype.doWrite = oldWriteFunction;
         Cat.prototype.dopurr = oldpurr;
@@ -194,7 +207,7 @@ var j = require("justoop");
 
     publish(exports, {
         testGet: testGet,
-        testMultipleInheritance: testMultipleInheritance,
+        testZMultipleInheritance: testZMultipleInheritance,
         testNameSpace: testNameSpace,
         testSimpleClass: testSimpleClass,
         testSimpleInheritance: testSimpleInheritance

@@ -261,6 +261,14 @@
         };
         var ns = namespace(ns_name);
         var ArrayProto = Array.prototype, FuncProto = Function.prototype, nativeBind = FuncProto.bind, slice = ArrayProto.slice;
+        function newLog (obj)
+        {
+            if (obj.constructor && obj.constructor.__name__)
+                oldLog.call(console, obj.constructor.__name__+ "{}"); 
+            else
+                oldLog.apply(console, makeArray(arguments));
+        }
+
         function bind(func, context) {
             var args, bound;
             if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
@@ -278,6 +286,11 @@
         }
         if (globals.console) {
             try {
+                var oldLog = console.constructor.prototype.log;
+                if (oldLog != newLog)
+                {
+                        console.constructor.prototype.log = newLog;
+                }
                 log = bind(console.log, console);
             } catch (e) {
                 log = function() {
@@ -366,6 +379,12 @@
                 return target;
             }
             function assignMember(target, attrname, value) {
+                var old = target[attrname];
+                if (isDefined(old) &&  isFunction(old))
+                {
+                    var level = (old.__level__ || 0) +1;
+                    value.__level__ = level;
+                }
                 target[attrname] = value;
             }
             var missing_new = "missing new operator";
@@ -405,8 +424,9 @@
                     var o = {};
                     each(attributes(other), function(idx, name) {
                         if (!contains(reserved_methods, name)) {
-                            var value = other[name];
-                            if (isFunction(value)) {
+                            var fvalue , value;
+                            fvalue , value = other[name];
+                            if (isFunction(fvalue)) {
                                 value = function(funcname, other) {
                                     var funcname = name;
                                     var proto = other;
@@ -414,12 +434,28 @@
                                         return proto[funcname].apply(this, arguments);
                                     };
                                 }(name, other);
+                                value.__level__ = fvalue.__level__;
                             }
                             o[name] = value;
                         }
                     });
                     for (var attr in o) {
-                        if (!c_prototype[attr]) c_prototype[attr] = o[attr];
+                        
+                        var old_attr = c_prototype[attr];
+                        if (!isFunction(old_attr))
+                        {
+                            if (isUndefined(c_prototype[attr]))
+                                 c_prototype[attr] = o[attr];
+                        }
+                        else 
+                        {
+                            var newLevel = (o[attr].__level__ ||0);
+                            if (newLevel> (old_attr.__level__ ||0))
+                            {
+                                c_prototype[attr] = o[attr];
+                                c_prototype[attr].__level__ = newLevel+1;
+                            }
+                        }
                     }
                 });
                 c_prototype.constructor = c;
@@ -462,6 +498,8 @@
             };
             return Subclasser;
         }();
+        var subclasser = new Subclasser();
+
         
         var PublicSubclasser = function(superClass) {
             function constructor(name) {
@@ -520,9 +558,8 @@
         Function.prototype.__publish__ = function(ns, name) {
             if (this.prototype && this.prototype.__class__) {
                 var fullname = [ ns.__name__, name ].join(".");
-                var new_class = public_class(fullname, this, {});
-                new_class.__js_line__ = new_class.prototype.__js_line__ = this.__js_line__;
-                return new_class;
+                this.__name__ = fullname;
+                return this;
             } else return this;
         };
         
@@ -624,9 +661,8 @@
          *  implements_(catWoman, Animal) == true;
          *  implements_(catWoman, Object) == true;
          */
-        
+
         function subclass() {
-            var subclasser = new Subclasser();
             return subclasser.subclass.apply(subclasser, makeArray(arguments));
         }
         function isClass(class_) {
@@ -727,6 +763,7 @@
             public_class: public_class,
             PublicSubclasser: PublicSubclasser
         });
+        ns.publish = publish;
         if (typeof module == "undefined")
         {
               namespace("justoop");
