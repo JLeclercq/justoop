@@ -768,6 +768,7 @@
         {
               namespace("justoop");
         }
+        ns.publish = publish;
         extend(exports, ns);
         exports.publish = publish;
     })(globals, require_, exports_);
