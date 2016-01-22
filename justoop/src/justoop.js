@@ -58,9 +58,9 @@
         }
         var underscore = require("underscore");
         var justoop = globals.justoop || {}, _each = get(underscore.each), extend = get(underscore.extend),
-                      map = get(underscore.map), isFunction = get(underscore.isFunction), contains = get(underscore.contains), 
-                      keys = get(underscore.keys), js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__", 
-                      current_package_property = "__current_package_name__", current_package = justoop[current_package_property], 
+                      map = get(underscore.map), isFunction = get(underscore.isFunction), contains = get(underscore.contains),
+                      keys = get(underscore.keys), js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
+                      current_package_property = "__current_package_name__", current_package = justoop[current_package_property],
                       package_name = current_package, ns_name = "justoop";
         function isString(value) {
             return typeof value == "string" || String.prototype.isPrototypeOf(value);
@@ -138,17 +138,17 @@
         /**
         * create a global namespace in similart way to the java packages or python modules
         * @param {string} [namespace] the namspace dotted name
-        * 
+        *
         * Examples:
         * var ns = namespace("a.b.c");
         * var ns2 = namespace("a.b.c");
-        * 
+        *
         * ns == n2 == a.b.c
         *
-        * 
+        *
         * var ns3 = namespace("a.b");
-        * 
-        * ns3 == a.b 
+        *
+        * ns3 == a.b
         * ns3.c == ns == ns2 == a.b.c
         *
         */
@@ -208,28 +208,28 @@
         }
         /**
          * Publish a function, class, or variable in the given namespace,
-         * check that they are not already been published to avoid unintended 
-         * overwriting 
+         * check that they are not already been published to avoid unintended
+         * overwriting
          * @param {object} [target]     target namespace
          * @param {object} [newAPI]     new api object
-         * 
+         *
          * Examples:
-         * 
+         *
          * var ns = namespace("mynamespace");
-         * 
+         *
          * function echo(msg)
          * {
          *      return msg;
          * }
-         *   
-         * 
+         *
+         *
          * publish(ns, {
          *              echo:echo
          *       });
-         * 
-         * 
+         *
+         *
          * mynamespace.echo(3) == 3;
-         * 
+         *
          */
         var publish = justoop.publish = function(target, newAPI) {
             if (target.__publish__) {
@@ -264,7 +264,7 @@
         function newLog (obj)
         {
             if (obj.constructor && obj.constructor.__name__)
-                oldLog.call(console, obj.constructor.__name__+ "{}"); 
+                oldLog.call(console, obj.constructor.__name__+ "{}");
             else
                 oldLog.apply(console, makeArray(arguments));
         }
@@ -369,21 +369,38 @@
             return false;
         }
         var Object_prototype = Object.prototype;
+
+
+
         var Subclasser = function() {
             function Subclasser() {}
             function copyMembers(target, source) {
                 for (var attr in source) {
                     var m = source[attr];
-                    this._assignMember(target, attr, m);
+                    this._assignMember(target, attr, m, source);
                 }
                 return target;
             }
-            function assignMember(target, attrname, value) {
+            function setLevel(target, attrname, value, level)
+            {
+                var overrides = target.__overrides__ || {};
+                overrides[attrname] = level;
+                target.__overrides__  = overrides;
+            }
+
+            function getLevel(source, attrname, value)
+            {
+                var overrides = source.__overrides__ || {};
+                return  overrides[attrname] || 0;
+                //return (value.__level__ || 0);
+            }
+            function assignMember(target, attrname, value, source) {
                 var old = target[attrname];
                 if (isDefined(old) &&  isFunction(old))
                 {
-                    var level = (old.__level__ || 0) +1;
-                    value.__level__ = level;
+                    var level = getLevel(source, attrname, old)+1;
+                    setLevel(target, attrname, value, level);
+
                 }
                 target[attrname] = value;
             }
@@ -425,35 +442,37 @@
                     each(attributes(other), function(idx, name) {
                         if (!contains(reserved_methods, name)) {
                             var fvalue , value;
-                            fvalue , value = other[name];
-                            if (isFunction(fvalue)) {
-                                value = function(funcname, other) {
-                                    var funcname = name;
-                                    var proto = other;
-                                    return function() {
-                                        return proto[funcname].apply(this, arguments);
-                                    };
-                                }(name, other);
-                                value.__level__ = fvalue.__level__;
+                            fvalue = value = other[name];
+                            value = function(funcname, other) {
+                                var funcname = name;
+                                var proto = other;
+                                return function() {
+                                    return proto[funcname].apply(this, arguments);
+                                };
+                            }(name, other);
+                            if (isFunction(value)) {
+                                 //log("FICO", name, value.__level__);
+                                 //value.__level__ = fvalue.__level__;
+                                 setLevel(o, name, value, getLevel(other, name, fvalue))
                             }
                             o[name] = value;
                         }
                     });
                     for (var attr in o) {
-                        
+
                         var old_attr = c_prototype[attr];
                         if (!isFunction(old_attr))
                         {
                             if (isUndefined(c_prototype[attr]))
-                                 c_prototype[attr] = o[attr];
+                                c_prototype[attr] = o[attr];
                         }
-                        else 
+                        else
                         {
-                            var newLevel = (o[attr].__level__ ||0);
-                            if (newLevel> (old_attr.__level__ ||0))
+                            var newLevel = getLevel(other, attr, o[attr]);
+                            if (newLevel> getLevel(c_prototype, attr, old_attr))
                             {
                                 c_prototype[attr] = o[attr];
-                                c_prototype[attr].__level__ = newLevel+1;
+                                setLevel(c_prototype, attr, c_prototype[attr], newLevel+1);
                             }
                         }
                     }
@@ -500,7 +519,7 @@
         }();
         var subclasser = new Subclasser();
 
-        
+
         var PublicSubclasser = function(superClass) {
             function constructor(name) {
                 this.__className = name;
@@ -562,19 +581,19 @@
                 return this;
             } else return this;
         };
-        
+
         /**
          * Create a Javascript class
-         * 
+         *
          * Examples:
-         * 
+         *
          * var Animal = (function (Base) {
          *        function doSound() {
          *           return "animal";
          *        }
-         * 
+         *
          *        function walk() {}
-         * 
+         *
          *
          *        return subclass({
          *            doSound: doSound,
@@ -583,15 +602,15 @@
          *           walk: walk
          *        }, Base);
          *   })(Object);
-         * 
+         *
          *    var animal = new Animal();
          *    animal.doSound() == "animal";
          *    animal.tail == false;
          *    animal.paws_number == 4;
          *    implements_(animal, Object)== true;
          *    implements_(animal, Animal)== true;
-         * 
-         * 
+         *
+         *
          *  var Cat = (function (Base){
          *
          *          function doSound() {
@@ -607,18 +626,18 @@
          *                   dopurr: dopurr
          *               }, Base);
          *    })(Animal);
-         *       
+         *
          *
          *  var cat = new Cat();
-         * 
+         *
          *    cat.doSound() == "meow";
          *    animal.tail == true;
          *    animal.paws_number == 4;
          *    implements_(cat, Cat) == true;
          *    implements_(cat, Animal) == true;
          *    implements_(cat, Object) == true;
-         * 
-         * 
+         *
+         *
          *   var Man =  function (Base){
          *      function doSound() {
          *       return "hello";
@@ -635,7 +654,7 @@
          *       }, Base);
          * })(Animal);
          *
-         * 
+         *
          * var CatWoman = (function (Base1, Base2) {
          *       function doSuperPowers() {
          *           return "you can kill me 8 times, but i am still alive";
@@ -651,7 +670,7 @@
          *           doSound: doSound
          *       }, Base1, Base2);
          *   })(Cat, Man);
-         * 
+         *
          *  var cat = new Cat();
          *  var catWoman = new CatWoman();
          *  catWoman.tail == true;
@@ -768,7 +787,6 @@
         {
               namespace("justoop");
         }
-        ns.publish = publish;
         extend(exports, ns);
         exports.publish = publish;
     })(globals, require_, exports_);

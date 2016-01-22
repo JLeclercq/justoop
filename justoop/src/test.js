@@ -3,6 +3,7 @@ var j = require("justoop");
     var get = justoop.get,
     publish = get(justoop.publish),
     isUndefined = get(justoop.isUndefined),
+    subclass = get(justoop.subclass),
     namespace = get(justoop.namespace);
 
     function testGet(test) {
@@ -161,7 +162,7 @@ var j = require("justoop");
         test.done();
     }
 
-    function testZMultipleInheritance(test)  {
+    function testMultipleInheritance(test)  {
         var implements_ = get(justoop.implements_);
         var Animal = defineAnimal();
         var Cat = defineCat();
@@ -177,17 +178,6 @@ var j = require("justoop");
         test.ok(catWoman.tail == true," tail:"+ catWoman.tail);
         var oldWriteFunction = Man.prototype.doWrite;
         var oldpurr = Cat.prototype.dopurr;
-        /*
-        
-        Man.prototype.doWrite = function()
-        {
-            return "write function changed";
-        }
-        Cat.prototype.dopurr = function()
-        {
-            return "purr changed";
-        }
-        */
         Man.prototype.doWrite = function()
         {
             return "write function changed";
@@ -205,9 +195,23 @@ var j = require("justoop");
         test.done();
     }
 
+    function testMultipleInheritance2(test)  {
+        var implements_ = get(justoop.implements_);
+        var Animal = defineAnimal();
+        var Cat = defineCat();
+        var Man = defineMan();
+        var CatWoman = defineCatWoman();
+
+        console.log("CatWoman2");
+        var CatWoman2 = subclass({}, Animal, Cat, Man);
+        catWoman2 = new CatWoman2;
+        console.log(catWoman2.doSound());
+        test.done()
+    }
     publish(exports, {
         testGet: testGet,
-        testZMultipleInheritance: testZMultipleInheritance,
+        testMultipleInheritance: testMultipleInheritance,
+        testMultipleInheritance2: testMultipleInheritance2,
         testNameSpace: testNameSpace,
         testSimpleClass: testSimpleClass,
         testSimpleInheritance: testSimpleInheritance
