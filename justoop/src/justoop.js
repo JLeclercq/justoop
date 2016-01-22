@@ -348,7 +348,7 @@
             return false;
         }
         var interfaces_property = "__interfaces__", init_class_property = "__init__class__", subclasses_property = "__subclasses__", implements_method = "__implements__", super_property = "__super__", constuctor_property = "constructor", class_property = "__class__";
-        var reserved_methods = [ constuctor_property, js_line_property, class_property, js_line_property, interfaces_property, super_property, subclasses_property ];
+        var reserved_methods = [ constuctor_property, js_line_property, class_property, js_line_property, interfaces_property, super_property, subclasses_property , "__overrides__", "__implements__"];
         function isObject(obj) {
             return obj === Object(obj);
         }
@@ -383,20 +383,24 @@
             }
             function setLevel(target, attrname, value, level)
             {
+                //value.__level__ =  level;
+                //return;
                 var overrides = target.__overrides__ || {};
                 overrides[attrname] = level;
                 target.__overrides__  = overrides;
+
             }
 
             function getLevel(source, attrname, value)
             {
+                //return value.__level__ ||0;
                 var overrides = source.__overrides__ || {};
-                return  overrides[attrname] || 0;
-                //return (value.__level__ || 0);
+                var level =   overrides[attrname] || 0;
+                return level;
             }
             function assignMember(target, attrname, value, source) {
                 var old = target[attrname];
-                if (isDefined(old) &&  isFunction(old))
+                if (isDefined(old))
                 {
                     var level = getLevel(source, attrname, old)+1;
                     setLevel(target, attrname, value, level);
@@ -443,38 +447,35 @@
                         if (!contains(reserved_methods, name)) {
                             var fvalue , value;
                             fvalue = value = other[name];
-                            value = function(funcname, other) {
-                                var funcname = name;
-                                var proto = other;
-                                return function() {
-                                    return proto[funcname].apply(this, arguments);
-                                };
-                            }(name, other);
-                            if (isFunction(value)) {
-                                 //log("FICO", name, value.__level__);
-                                 //value.__level__ = fvalue.__level__;
-                                 setLevel(o, name, value, getLevel(other, name, fvalue))
-                            }
+                            if (isFunction(fvalue))
+                                value = function(funcname, other) {
+                                    var funcname = name;
+                                    var proto = other;
+                                    return function() {
+                                        return proto[funcname].apply(this, arguments);
+                                    };
+                                }(name, other);
+                            setLevel(other, name, value, getLevel(other, name, fvalue))
                             o[name] = value;
                         }
                     });
                     for (var attr in o) {
 
                         var old_attr = c_prototype[attr];
-                        if (!isFunction(old_attr))
-                        {
-                            if (isUndefined(c_prototype[attr]))
-                                c_prototype[attr] = o[attr];
-                        }
-                        else
-                        {
+                        //if (!isFunction(old_attr))
+                        //{
+                        //    if (isUndefined(c_prototype[attr]))
+                        //        c_prototype[attr] = o[attr];
+                        //}
+                        //else
+                        //{
                             var newLevel = getLevel(other, attr, o[attr]);
-                            if (newLevel> getLevel(c_prototype, attr, old_attr))
+                            if (isUndefined(c_prototype[attr]) || (newLevel> getLevel(c_prototype, attr, old_attr)))
                             {
                                 c_prototype[attr] = o[attr];
                                 setLevel(c_prototype, attr, c_prototype[attr], newLevel+1);
                             }
-                        }
+                        //}
                     }
                 });
                 c_prototype.constructor = c;

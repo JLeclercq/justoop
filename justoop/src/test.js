@@ -176,6 +176,8 @@ var j = require("justoop");
         test.ok(implements_(catWoman, Cat));
         test.ok(catWoman.paws_number == 2);
         test.ok(catWoman.tail == true," tail:"+ catWoman.tail);
+        //test.done();
+        //return;
         var oldWriteFunction = Man.prototype.doWrite;
         var oldpurr = Cat.prototype.dopurr;
         Man.prototype.doWrite = function()
@@ -187,7 +189,6 @@ var j = require("justoop");
             return "purr changed";
         }
         var res = catWoman.doWrite()
-        console.log(res);
         test.ok(res == "write function changed", "found:"+ res);
         test.ok(catWoman.dopurr() == "purr changed");
         Man.prototype.doWrite = oldWriteFunction;
@@ -201,11 +202,14 @@ var j = require("justoop");
         var Cat = defineCat();
         var Man = defineMan();
         var CatWoman = defineCatWoman();
-
-        console.log("CatWoman2");
         var CatWoman2 = subclass({}, Animal, Cat, Man);
         catWoman2 = new CatWoman2;
-        console.log(catWoman2.doSound());
+        test.ok(catWoman2.tail);
+        var CatWoman3 = subclass({}, Animal,  Man, Cat);
+        test.ok(catWoman2.doSound() == "meow");
+        catWoman3 = new CatWoman3;
+        test.ok(!catWoman3.tail);
+        test.ok(catWoman3.doSound() == "hello");
         test.done()
     }
     publish(exports, {
