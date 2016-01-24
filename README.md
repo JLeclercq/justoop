@@ -16,18 +16,15 @@ Key features:
 
 What It Does Not
 ------------
-Justoop is not a framework. It's just a small library made to manage classes in javascript (ECMAscript 5).
-
-It does not provide any UI component or MVC architectural pattern.
-
+Justoop is not a framework. It's just a small library made to manage classes in javascript (ECMAscript 5).  
+It does not provide any UI component or MVC architectural pattern.  
 It helps you to write classes to be used with your favorite framework at your option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.).
 
 What It Does
 ------------
 Let'    s provide some examples
 
-Use it
---------------
+### Use it
     <script src="underscore.js"></script>
     <script src="justoop.js"></script>
     <script type="text/javascript">
@@ -52,11 +49,9 @@ Use it
 
 
 
-Simple Class
---------------
+### Simple Class
 
     var Animal = function (){
-
            return subclass({
                emitSound: function (){
                    return "mute";
@@ -69,8 +64,7 @@ Simple Class
 
     > "mute"
 
-Inherited Class
---------------
+### Inherited Class
 
     var Cat = function (Base){
            return subclass({
@@ -86,8 +80,7 @@ Inherited Class
     > "meow"
 
 
-Constructor
---------------
+### Constructor
 
     var Human = function (Base){
            return subclass({
@@ -112,8 +105,7 @@ Constructor
 
     > "nye"
 
-Calling The Super Class
---------------
+### Calling The Super Class
 
     var YesMan = function (Base){
            return subclass({
@@ -134,8 +126,7 @@ Calling The Super Class
 
     > "hello, yes"
 
-Multiple Inheritance:
---------------
+### Multiple Inheritance:
 
     var Fly = (function(Base){
             return subclass({
@@ -165,8 +156,7 @@ Multiple Inheritance:
     > "like a man, zzzzzzz"
 
 
-Changing Prototypes:
---------------
+### Changing Prototypes:
 
     Fly.prototype.emitSound = function()
     {
