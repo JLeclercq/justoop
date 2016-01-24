@@ -5,7 +5,7 @@ justoop
 Ambrose Bierce
 
 
-Lightweight But Serious Object Oriented Library For Javascript (ECMAscript 5)
+Lightweight Object Oriented Library For Javascript (ECMAscript 5)
 --------
 
 Key features:
