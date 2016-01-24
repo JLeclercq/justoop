@@ -28,6 +28,26 @@ Let'    s provide some examples
 
 Use it
 --------------
+    <script src="underscore.js"></script>
+    <script src="justoop.js"></script>
+    <script type="text/javascript">
+        (function(justoop)
+        {
+            var subclass = justoop.subclass;
+
+            var Animal = function (){
+                   return subclass({
+                       emitSound: function (){
+                           return "mute";
+                       }
+                    });
+            }();
+
+            var animal = new Animal;
+            animal.emitSound();
+
+        })(justoop);
+    </script>
 
 
 
