@@ -1,6 +1,6 @@
 {
   "name": "justoop",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Object Oriented Javascript Framework",
   "main": "./src/justoop.js",
   "repository": {
@@ -19,7 +19,7 @@
     "nodeunit": "^0.9.0"
   },
   "dependencies": {
-    "underscore": "^1.8.2"
+    "underscore": ">=1.8.2"
   },
   "scripts": {
     "test": "test"
