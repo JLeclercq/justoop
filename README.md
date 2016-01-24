@@ -24,7 +24,7 @@ It helps you to write classes to be used with your favorite framework at you opt
 
 Let'    s provide some examples
 
-#### Simple class
+#### Simple Class
 
     var Animal = function (){
 
@@ -40,7 +40,7 @@ Let'    s provide some examples
 
     > "mute"
 
-#### Inherited class
+#### Inherited Class
 
     var Cat = function (Base){
            return subclass({
@@ -102,7 +102,7 @@ Let'    s provide some examples
 
     > "hello, yes"
 
-#### Multiple inheritance:
+#### Multiple Inheritance:
 
     var Fly = (function(Base){
             return subclass({
@@ -132,7 +132,7 @@ Let'    s provide some examples
     > "like a man, zzzzzzz"
 
 
-#### Changing prototypes:
+#### Changing Prototypes:
     Fly.prototype.emitSound = function()
     {
         return "changed zzzz";
