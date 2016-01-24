@@ -1,5 +1,8 @@
-dist
 *~
 *.kate-swp
 node_modules
 npm-debug.log
+/env
+.project
+.metadata
+.pydevproject

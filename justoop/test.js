@@ -1,4 +1,4 @@
-var j = require("./src/justoop");
+var j = require("./src/justoop.js");
 (function (justoop) {
     var get = justoop.get,
     publish = get(justoop.publish),
@@ -175,6 +175,8 @@ var j = require("./src/justoop");
         test.ok(implements_(catWoman, Cat));
         test.ok(catWoman.paws_number == 2);
         test.ok(catWoman.tail == true);
+        test.ok(catWoman.dopurr() == "purr");
+        test.ok(catWoman.doSuperPowers() == "you can kill me 8 times, but i am still alive");
         var oldWriteFunction = Man.prototype.doWrite;
         Man.prototype.doWrite = function()
         {
@@ -193,11 +195,41 @@ var j = require("./src/justoop");
     }
     
     
+    function testDeepInheritance(test)
+    {
+        var Animal = defineAnimal();
+        var subclass = get(justoop.subclass);
+        var Bull = (function(Base){
+            return subclass({
+                charge: function (){return "charge!!";},
+                doSound: function(){return "moo"}
+            },Base);
+        })(Animal);
+        
+        var ns = namespace("test");
+        publish (ns, {Bull:Bull});
+        
+        
+        var BullMan = (function(Bull, Man){
+            return subclass ({},Bull, Man);
+        })(ns.Bull, Man);
+        
+        var bullMan = new BullMan();
+        
+        test.ok(bullMan.doSound() =="moo");
+        test.ok(bullMan.charge() =="charge!!");
+        test.done()
+        debugger;
+        
+    }
+    
+    
     
     publish(exports, {
         testGet: testGet,
         testMultipleInheritance: testMultipleInheritance,
         testNameSpace: testNameSpace,
+        testDeepInheritance: testDeepInheritance,
         testSimpleClass: testSimpleClass,
         testSimpleInheritance: testSimpleInheritance
     })

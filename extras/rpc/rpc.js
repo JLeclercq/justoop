@@ -150,7 +150,7 @@
         function encodeRequest(method, args, kargs) {
             return stringify({
                 method : method,
-                args : args,
+                params : args,
                 kargs : kargs
             });
         }
