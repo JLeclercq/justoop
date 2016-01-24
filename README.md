@@ -18,13 +18,17 @@ What It Does Not
 ------------
 Justoop is not a framework. It's just a small library made to manage classes in javascript (ECMAscript 5).  
 It does not provide any UI component or MVC architectural pattern.  
-It helps you to write classes to be used with your favorite framework at your option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.).
+It helps you to write classes to be used in plain Javascript or with your favorite framework at your option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.)
 
 What It Does
 ------------
 Let'    s provide some examples
 
 ### Use it
+
+We do not want to reinvent the wheel. justoop uses underscore.
+download [underscore](https://github.com/jashkenas/underscore) and [justoop](https://github.com/Justoop/justoop)
+
     <script src="underscore.js"></script>
     <script src="justoop.js"></script>
     <script type="text/javascript">
