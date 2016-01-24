@@ -1,11 +1,12 @@
-#justoop
-
+justoop
+========
 > *The small part of ignorance that we arrange and classify we give the name of knowledge.*
 
 Ambrose Bierce
 
 
-## Lightweight But Serious Object Oriented Library For Javascript (ECMAscript 5)
+Lightweight But Serious Object Oriented Library For Javascript (ECMAscript 5)
+--------
 
 Key features:
 
@@ -13,18 +14,26 @@ Key features:
 * full javascript prototype chain compliance
 * single and multiple inheritance support
 
-### What It Does Not
-Justoop is not a framework. It's just a small library made to manager classes in javascript (ECMAscript 5).
+What It Does Not
+------------
+Justoop is not a framework. It's just a small library made to manage classes in javascript (ECMAscript 5).
 
 It does not provide any UI component or MVC architectural pattern.
 
-It helps you to write classes to be used with your favorite framework at you option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.).
+It helps you to write classes to be used with your favorite framework at your option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.).
 
-### What It Does
-
+What It Does
+------------
 Let'    s provide some examples
 
-#### Simple Class
+Use it
+--------------
+
+
+
+
+Simple Class
+--------------
 
     var Animal = function (){
 
@@ -40,7 +49,8 @@ Let'    s provide some examples
 
     > "mute"
 
-#### Inherited Class
+Inherited Class
+--------------
 
     var Cat = function (Base){
            return subclass({
@@ -56,7 +66,8 @@ Let'    s provide some examples
     > "meow"
 
 
-#### Constructor
+Constructor
+--------------
 
     var Human = function (Base){
            return subclass({
@@ -81,7 +92,8 @@ Let'    s provide some examples
 
     > "nye"
 
-#### Calling The Super Class
+Calling The Super Class
+--------------
 
     var YesMan = function (Base){
            return subclass({
@@ -102,7 +114,8 @@ Let'    s provide some examples
 
     > "hello, yes"
 
-#### Multiple Inheritance:
+Multiple Inheritance:
+--------------
 
     var Fly = (function(Base){
             return subclass({
@@ -132,7 +145,9 @@ Let'    s provide some examples
     > "like a man, zzzzzzz"
 
 
-#### Changing Prototypes:
+Changing Prototypes:
+--------------
+
     Fly.prototype.emitSound = function()
     {
         return "changed zzzz";
