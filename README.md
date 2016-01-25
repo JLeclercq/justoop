@@ -25,12 +25,19 @@ What It Does
 Let'    s provide some examples
 
 ### Use it
-
-We do not want to reinvent the wheel. justoop uses underscore.
+justoop depends on underscore.
 download [underscore](https://github.com/jashkenas/underscore) and [justoop](https://github.com/Justoop/justoop)
 
-    <script src="underscore.js"></script>
-    <script src="justoop.js"></script>
+
+    <html>
+    <head>
+        <title>Test</title>
+    </head>
+    <body>
+        <div id="content"></div>
+
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://justoop.tk/justoop.js"></script>
     <script type="text/javascript">
         (function(justoop)
         {
@@ -45,11 +52,13 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
             }();
 
             var animal = new Animal;
-            animal.emitSound();
+            var c = document.getElementById("content");
+            c.innerText = animal.emitSound();
 
         })(justoop);
     </script>
-
+    <body>
+    <html>
 
 
 
@@ -79,7 +88,7 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
     }(Animal);
 
     var cat = new Cat;
-    animal.emitSound();
+    cat.emitSound();
 
     > "meow"
 
@@ -112,11 +121,12 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
 ### Calling The Super Class
 
     var YesMan = function (Base){
+        function emitSound  (){
+            return YesMan.__super__.emitSound.call(this) + ", yes";
+        }
            return subclass({
-               emitSound: function (){
-                   return this.__super__.emitSound.call(this) + ", yes";
-               }
-            });
+               emitSound:emitSound
+           }, Base);
     }(Human);
 
     var man1 = new Human("hello");
@@ -145,19 +155,16 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
                 }, Base);
         })(Animal);
 
-    var FlyMan = (function(Man, Fly){
+    var FlyMan = (function( Fly, Human){
             return subclass ({
-                    emitSound: function()
-                    {
-                        Man.prototype.emitSound.call(this)+ ", "+ Fly.prototype.emitSound.call(this);
-                    }
-                }, Man, Fly);
-        })(Man, Fly);
+                },  Fly,Human);
+        })(Fly,Human );
 
     var flyman = new FlyMan("like a man");
+    var fly = new Fly;
     flyman.emitSound();
 
-    > "like a man, zzzzzzz"
+    > "zzzzzzz"
 
 
 ### Changing Prototypes:
@@ -173,4 +180,4 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
 
     flyman.emitSound();
 
-    > "like a man, changed zzzz"
+    > "changed zzzz"

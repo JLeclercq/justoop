@@ -1,25 +1,129 @@
 <html>
-    <head>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
-        <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script src="src/justoop.js"></script>
-        <script type="text/javascript">
-            $(function()
-            {
-                $("#content").text("fichissimo");        
-            });
-        </script>
-    </head>
-    <body>
-        
-    <div id="content">
-        che figata, molto fihgata
-    </div>
-        <table>
-            <tr>
-                <td> a
-                </td>
-            </tr>
-        </table>
-    </body>
-</html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <div id="content"></div>
+
+<script src="/node_modules/underscore/underscore.js"></script>
+<script src="src/justoop.js"></script>
+<script type="text/javascript">
+    "use strict";
+    (function(justoop)
+    {
+        var subclass = justoop.subclass;
+        var div = document.createElement("div");
+        div.style.display = "none";
+        function log(msg)
+        {
+            var c = document.getElementById("content");
+             div.innerHTML = "<p>"+msg+"</p>";
+            var frag = div.children[0];
+            c.appendChild(frag);
+
+        }
+
+        var Animal = function (){
+               return subclass({
+                   emitSound: function (){
+                       return "mute";
+                   }
+                });
+        }();
+
+        var animal = new Animal;
+        log(animal.emitSound());
+
+        var Cat = function (Base){
+               return subclass({
+                   emitSound: function (){
+                       return "meow";
+                   }
+                }, Base);
+        }(Animal);
+
+        var cat = new Cat;
+        log(cat.emitSound());
+
+
+        var Human = function (Base){
+               return subclass({
+                   constructor : function(word)
+                   {
+                       this.word = word;
+                   },
+                   emitSound: function (){
+                       return this.word;
+                   }
+                }, Base);
+        }(Animal);
+
+        var man1 = new Human("hello");
+        var man2 = new Human("bye");
+
+        log(man1.emitSound());
+
+        log(man2.emitSound());
+
+        var YesMan = function (Base){
+            function emitSound  (){
+                return YesMan.__super__.emitSound.call(this) + ", yes";
+            }
+               return subclass({
+                   emitSound:emitSound
+               }, Base);
+        }(Human);
+
+        var man1 = new Human("hello");
+        var man2 = new YesMan("hello");
+
+        log(man1.emitSound());
+
+
+        log(man2.emitSound());
+
+        var Fly = (function(Base){
+                return subclass({
+                    emitSound : function()
+                    {
+                        return "zzzzz";
+                    },
+                    fly: function()
+                    {
+                        return "i can fly";
+                    }
+                    }, Base);
+            })(Animal);
+
+        var FlyMan = (function(Fly, Human){
+
+                return subclass ({
+                }, Fly, Human);
+            })(Fly, Human);
+
+        var flyman = new FlyMan("like a man");
+        log(flyman.emitSound());
+
+        Fly.prototype.emitSound = function()
+        {
+            return "changed zzzz";
+        }
+        var fly = new Fly;
+        log(fly.emitSound());
+        log(flyman.emitSound());
+
+
+
+
+
+
+
+
+
+
+
+
+    })(justoop);
+</script>
+<body>
+<html>
