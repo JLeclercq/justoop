@@ -11,10 +11,6 @@ module.exports = function (grunt) {
             dist: {
                 src: ['src/justoop.js'],
                 dest: 'dist/<%= pkg.name %>.<%= pkg.version%>.js'
-            },
-            with_underscore: {
-                src: ['src/justoop.js', 'node_modules/underscore/underscore.js'],
-                dest: 'dist/<%= pkg.name %>.<%= pkg.version%>-with-underscore.js'
             }
         },
         replace:
@@ -44,8 +40,7 @@ module.exports = function (grunt) {
             },
 	        dist: {
                 files: {
-                    'dist/<%= pkg.name %>.<%= pkg.version%>.min.js': ["<%= concat.dist.dest %>"],
-                    'dist/<%= pkg.name %>.<%= pkg.version%>-with-underscore.min.js': ["<%= concat.with_underscore.dest %>"]
+                    'dist/<%= pkg.name %>.<%= pkg.version%>.min.js': ["<%= concat.dist.dest %>"]
                 }
             }
         },

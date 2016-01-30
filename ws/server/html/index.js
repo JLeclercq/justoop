@@ -26,7 +26,7 @@
         {
             var moveup = body.find(".moveup");
             moveup.click(function(){
-                body.scrollTop(0);
+                body.animate({scrollTop:0}, 400);
             })
         }
         initComponent();

@@ -684,10 +684,8 @@ span.kd {
 .highlight {
     /* font-size: 15px; */
     line-height: 1.5em;
-    background-color: #353535;
+    /* background-color: #2C333E; */
     padding: 1em;
-    border-radius: 1em;
-    box-shadow: 0px 0px 10px black;
     /* overflow: auto; */
     /* min-width: 500px; */
 }
@@ -698,18 +696,20 @@ pre
 
 a.hidden {
     opacity: 0;
-    transition-property: opacity;
-    transition-duration: 400ms;
 }
 
 *:hover > a.hidden {
     opacity: 1;
 }
 
-body
+.optrans
 {
     transition-property: opacity;
     transition-duration: 400ms;
+}
+
+body
+{
 }
 .no-initialized
 {
@@ -787,7 +787,7 @@ ol ol {
 .html-example {
     font-size: 15px;
     position: relative;
-    min-width: 52em;
+    /* min-width: 52em; */
 }
 
 span.download1 {
@@ -805,13 +805,55 @@ body.scrolled .moveup {
     bottom: 10px;
     right: 10px;
     opacity:0;
-    transition-property:opacity;
-    transition-duration:.4s;
+    font-size: 50px;
+}
+.moveup a
+{
+    color: #8993A7;
+}
+
+.quote {
+    font-style: italic;
+    font-size: 80%;
+    width: 100%;
+    /* float: right; */
+    color: white;
+    /* margin-top: -52px; */
+    position: absolute;
+    top: 2em;
+    right: 2em;
+    width: 23em;
+    padding: 1em;
+    opacity: 1;
+}
+
+.relief
+{
+    background-color: rgba(44, 51, 62, 1);
+    border-radius: 1em;
+    box-shadow: 3px 3px  3px black;
+}   
+.quote .author
+{
+    font-style: normal;
+    font-weight:bold;
 }
 
 
-@media screen and (max-width: 52em) {
+@media screen and (max-width: 42em) {
     .html-example {
         font-size: 10px;
+    }
+    
+    .quote
+    {
+        opacity: 0;
+    }
+}
+
+
+@media screen and (max-width: 32em) {
+    .html-example .highlight{
+        overflow-x: scroll;
     }
 }
