@@ -50,33 +50,45 @@
         function isUndefined(obj) {
             return typeof obj == "undefined";
         }
-        function each()
+
+        function extend(target, source)
         {
-            debugger;
+            for (var attr in source)
+                target[attr] = source[attr];
+            return target
         }
 
-        function extend()
+        function isArrayLike(array)
         {
-            debugger;
+              return isDefined(array.length);
         }
 
-        function map()
+        function map (obj, iteratee) {
+            var _keys = !isArrayLike(obj) && keys(obj),
+                length = (_keys || obj).length,
+                results = Array(length);
+            for (var index = 0; index < length; index++) {
+              var currentKey = _keys ? _keys[index] : index;
+              results[index] = iteratee(obj[currentKey], currentKey, obj);
+                }
+                return results;
+          }
+
+        function isFunction(arg)
         {
-            debugger;
+            return typeof arg == "function";
         }
 
-        function isFunction()
+        function contains(collection, value)
         {
-            debugger;
+            return collection.indexOf(value) != -1;
         }
-
-        function contains()
+        function keys(arg)
         {
-            debugger;
-        }
-        function keys()
-        {
-            
+            var res =[]
+            for (var attr in arg)
+                res.push(attr);
+            return res;
         }
         var justoop = globals.justoop || {},
                       js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
@@ -116,6 +128,7 @@
                 this.__namespaces[name] = namespace;
             }
             function namespaces() {
+                debugger;
                 return map(this.__namespaces, function(i, e) {
                     return i;
                 });
@@ -582,14 +595,14 @@
                 __class_registry[name] = res;
                 return res;
             }
-            return subclass(superClass, {
+            return subclass( {
                 constructor: constructor,
                 allClasses: allClasses,
                 _createFirstConstructor: _createFirstConstructor,
                 _createConstructor: _createConstructor,
                 subclass: _subclass,
                 stack_depth: 4
-            });
+            }, superClass);
         }(Subclasser);
         function public_class(name) {
             var publicsubclasser = new PublicSubclasser(name);

@@ -48,15 +48,23 @@ module.exports = function (grunt) {
                     'dist/<%= pkg.name %>.<%= pkg.version%>-with-underscore.min.js': ["<%= concat.with_underscore.dest %>"]
                 }
             }
-        }
-        /*,
-        browserify: {
+        },
+        nodeunit:
+        {
+            test: ['src/test.js']
+        },
+        env: {
+           test:{
+               NODE_PATH:"./src/"
+           }
+         }
+        /*browserify: {
             options:{
-                exclude:["external"]
+                exclude:["underscore", "justoop"]
             },
             dist: {
-                src: ['src/justoop.js'],
-                dest: 'dist/<%= pkg.name %>-with-underscore.js'
+                src: ['src/test.js'],
+                dest: 'dist/btest.js'
             }
 
         }*/
@@ -66,9 +74,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    //grunt.loadNpmTasks('grunt-browserify');
     //grunt.loadNpmTasks('grunt-browserify');
     //grunt.registerTask('test', [ ]);
 
-    grunt.registerTask('default', ['clean', 'concat', 'replace:first', 'uglify','replace:second']);
-
+    grunt.registerTask('default', ['nodeunit', 'clean', 'concat', 'replace:first', 'uglify','replace:second']);
 };

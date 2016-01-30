@@ -89,6 +89,7 @@ def _create_app(root):
         renderer = Renderer(search_dirs=[search_dir], file_extension="html")
         res = renderer.render_name("index", Index())
         return res
+
     return app
 
 def _template_dir():

@@ -1,5 +1,6 @@
-var j = require("justoop");
-(function (justoop) {
+"use strict";
+var j = require("./justoop");
+(function (justoop, exports) {
     var get = justoop.get,
     publish = get(justoop.publish),
     isUndefined = get(justoop.isUndefined),
@@ -141,7 +142,7 @@ var j = require("justoop");
         var implements_ = get(justoop.implements_);
         var Animal = defineAnimal();
         var Cat = defineCat();
-        cat = new Cat();
+        var cat = new Cat();
         test.ok(cat.doSound() == "meow", "cat doeas not mew");
         test.ok(cat.dopurr() == "purr", "cat doeas not purr: '"+cat.dopurr() +"'");
         test.ok(cat.paws_number == 4, "cat.paws_number == 4");
@@ -203,11 +204,11 @@ var j = require("justoop");
         var Man = defineMan();
         var CatWoman = defineCatWoman();
         var CatWoman2 = subclass({}, Animal, Cat, Man);
-        catWoman2 = new CatWoman2;
+        var catWoman2 = new CatWoman2;
         test.ok(catWoman2.tail);
         var CatWoman3 = subclass({}, Animal,  Man, Cat);
         test.ok(catWoman2.doSound() == "meow");
-        catWoman3 = new CatWoman3;
+        var catWoman3 = new CatWoman3;
         test.ok(!catWoman3.tail);
         test.ok(catWoman3.doSound() == "hello");
         test.done()
@@ -220,4 +221,4 @@ var j = require("justoop");
         testSimpleClass: testSimpleClass,
         testSimpleInheritance: testSimpleInheritance
     })
-})(justoop);
+})(justoop, exports);
