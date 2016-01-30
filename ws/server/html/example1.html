@@ -1,0 +1,54 @@
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <div id="content"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://justoop.tk/justoop.min.js"></script>
+    <script type="text/javascript">
+        (function(justoop)
+        {
+
+            var div = document.createElement("div");
+            var c = document.getElementById("content");
+
+            function log(msg)
+            {
+                 div.innerHTML = "<p>"+msg+"</p>";
+                var frag = div.children[0];
+                c.appendChild(frag);
+
+            }
+
+            var subclass = justoop.subclass;
+
+
+            var Animal = function (){
+                   return subclass({
+                       emitSound: function (){
+                           return "animal sound";
+                       }
+                    });
+            }();
+
+            var animal = new Animal;
+            log("animal: " + animal.emitSound());
+
+            var Cat = function (Base){
+                  var __super__ = Base.prototype;
+                   return subclass({
+                       emitSound: function (){
+                           return "meow -" + __super__.emitSound.call(this);
+                       }
+                   }, Base);
+            }(Animal);
+            var cat = new Cat;
+            log("cat: " +cat.emitSound());
+
+
+        })(justoop);
+    </script>
+
+    <body>
+    <html>
