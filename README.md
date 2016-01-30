@@ -22,11 +22,11 @@ It helps you to write classes to be used in plain Javascript or with your favori
 
 What It Does
 ------------
-Let'    s provide some examples
+Let's provide some examples
 
 ### Use it
 justoop depends on underscore.
-download [underscore](https://github.com/jashkenas/underscore) and [justoop](https://github.com/Justoop/justoop)
+download [underscore](https://github.com/jashkenas/underscore) and [justoop](https://github.com/JLeclercq/justoop)
 
 
     <html>

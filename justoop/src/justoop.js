@@ -1,23 +1,17 @@
 "use strict";
 
 (function() {
-    var require_, exports_, globals;
+    var exports_, globals;
     var has_module = typeof module != "undefined";
-    var has_require = typeof require != "undefined";
-    if (!has_require) {
-        if (typeof window != "undefined") require_ = window.require = function(module_name) {
-            var underscore = window._;
-            if (!underscore) throw new Error("underscore not defined");
-            return underscore;
-        };
+    if (!has_module) {
+        if (typeof window != "undefined")
         globals = window;
         exports_ = {};
     } else {
-        require_ = module.require;
         exports_ = module.exports;
         globals = global;
     }
-    (function(globals, require, exports) {
+    (function(globals,  exports) {
         function makeArray(arr) {
             var res = [];
             each(arr, function(i, e) {
@@ -56,10 +50,36 @@
         function isUndefined(obj) {
             return typeof obj == "undefined";
         }
-        var underscore = require("underscore");
-        var justoop = globals.justoop || {}, _each = get(underscore.each), extend = get(underscore.extend),
-                      map = get(underscore.map), isFunction = get(underscore.isFunction), contains = get(underscore.contains),
-                      keys = get(underscore.keys), js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
+        function each()
+        {
+            debugger;
+        }
+
+        function extend()
+        {
+            debugger;
+        }
+
+        function map()
+        {
+            debugger;
+        }
+
+        function isFunction()
+        {
+            debugger;
+        }
+
+        function contains()
+        {
+            debugger;
+        }
+        function keys()
+        {
+            
+        }
+        var justoop = globals.justoop || {},
+                      js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
                       current_package_property = "__current_package_name__", current_package = justoop[current_package_property],
                       package_name = current_package, ns_name = "justoop";
         function isString(value) {
@@ -790,5 +810,5 @@
         }
         extend(exports, ns);
         exports.publish = publish;
-    })(globals, require_, exports_);
+    })(globals,  exports_);
 })();
