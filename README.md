@@ -182,6 +182,4 @@ Include justoop.js
     > "changed zzzz"
 
 
-Docs Website:
-
-    [justoop](https://justoop.tk/)
+Docs Website: [justoop](https://justoop.tk/)
