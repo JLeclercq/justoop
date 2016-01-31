@@ -5,7 +5,7 @@ justoop
 Ambrose Bierce
 
 
-Lightweight Object Oriented Library For Javascript (ECMAscript 5)
+Lightweight Object Oriented Library For Javascript
 --------
 
 Key features:
@@ -16,17 +16,17 @@ Key features:
 
 What It Does Not
 ------------
-Justoop is not a framework. It's just a small library made to manage classes in javascript (ECMAscript 5).  
+Justoop is not a framework. It's just a small library made to manage classes in javascript (before ECMAscript 6).  
 It does not provide any UI component or MVC architectural pattern.  
 It helps you to write classes to be used in plain Javascript or with your favorite framework at your option (jQuery, Dojo, Ext js, Angularjs, Backbone, Ember, etc.)
 
 What It Does
 ------------
-Let'    s provide some examples
+Let's provide some examples
 
 ### Use it
-justoop depends on underscore.
-download [underscore](https://github.com/jashkenas/underscore) and [justoop](https://github.com/Justoop/justoop)
+
+Include justoop.js
 
 
     <html>
@@ -36,7 +36,6 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
     <body>
         <div id="content"></div>
 
-    <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://justoop.tk/justoop.js"></script>
     <script type="text/javascript">
         (function(justoop)
@@ -181,3 +180,6 @@ download [underscore](https://github.com/jashkenas/underscore) and [justoop](htt
     flyman.emitSound();
 
     > "changed zzzz"
+
+
+Docs Website: [justoop](https://justoop.tk/)

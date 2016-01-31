@@ -1,24 +1,18 @@
-/*  justoop 0.1.0 . Lightweight Object Oriented Library For Javascript */
+/*  justoop 0.1.1 . Lightweight Object Oriented Library For Javascript */
 "use strict";
 
 (function() {
-    var require_, exports_, globals;
+    var exports_, globals;
     var has_module = typeof module != "undefined";
-    var has_require = typeof require != "undefined";
-    if (!has_require) {
-        if (typeof window != "undefined") require_ = window.require = function(module_name) {
-            var underscore = window._;
-            if (!underscore) throw new Error("underscore not defined");
-            return underscore;
-        };
+    if (!has_module) {
+        if (typeof window != "undefined")
         globals = window;
         exports_ = {};
     } else {
-        require_ = module.require;
         exports_ = module.exports;
         globals = global;
     }
-    (function(globals, require, exports) {
+    (function(globals,  exports) {
         function makeArray(arr) {
             var res = [];
             each(arr, function(i, e) {
@@ -57,10 +51,48 @@
         function isUndefined(obj) {
             return typeof obj == "undefined";
         }
-        var underscore = require("underscore");
-        var justoop = globals.justoop || {}, _each = get(underscore.each), extend = get(underscore.extend),
-                      map = get(underscore.map), isFunction = get(underscore.isFunction), contains = get(underscore.contains),
-                      keys = get(underscore.keys), js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
+
+        function extend(target, source)
+        {
+            for (var attr in source)
+                target[attr] = source[attr];
+            return target
+        }
+
+        function isArrayLike(array)
+        {
+              return isDefined(array.length);
+        }
+
+        function map (obj, iteratee) {
+            var _keys = !isArrayLike(obj) && keys(obj),
+                length = (_keys || obj).length,
+                results = Array(length);
+            for (var index = 0; index < length; index++) {
+              var currentKey = _keys ? _keys[index] : index;
+              results[index] = iteratee(obj[currentKey], currentKey, obj);
+                }
+                return results;
+          }
+
+        function isFunction(arg)
+        {
+            return typeof arg == "function";
+        }
+
+        function contains(collection, value)
+        {
+            return collection.indexOf(value) != -1;
+        }
+        function keys(arg)
+        {
+            var res =[]
+            for (var attr in arg)
+                res.push(attr);
+            return res;
+        }
+        var justoop = globals.justoop || {},
+                      js_line_property = "__js_line__", property_name = "__name__", package_property = "__package__",
                       current_package_property = "__current_package_name__", current_package = justoop[current_package_property],
                       package_name = current_package, ns_name = "justoop";
         function isString(value) {
@@ -97,6 +129,7 @@
                 this.__namespaces[name] = namespace;
             }
             function namespaces() {
+                debugger;
                 return map(this.__namespaces, function(i, e) {
                     return i;
                 });
@@ -563,14 +596,14 @@
                 __class_registry[name] = res;
                 return res;
             }
-            return subclass(superClass, {
+            return subclass( {
                 constructor: constructor,
                 allClasses: allClasses,
                 _createFirstConstructor: _createFirstConstructor,
                 _createConstructor: _createConstructor,
                 subclass: _subclass,
                 stack_depth: 4
-            });
+            }, superClass);
         }(Subclasser);
         function public_class(name) {
             var publicsubclasser = new PublicSubclasser(name);
@@ -791,5 +824,5 @@
         }
         extend(exports, ns);
         exports.publish = publish;
-    })(globals, require_, exports_);
+    })(globals,  exports_);
 })();
