@@ -128,7 +128,6 @@
                 this.__namespaces[name] = namespace;
             }
             function namespaces() {
-                debugger;
                 return map(this.__namespaces, function(i, e) {
                     return i;
                 });
@@ -403,7 +402,23 @@
         }
         var Object_prototype = Object.prototype;
 
-
+        if (typeof Object.create != 'function') {
+          Object.create = (function() {
+            var Temp = function() {};
+            return function (prototype) {
+              if (arguments.length > 1) {
+                throw Error('Second argument not supported');
+              }
+              if (typeof prototype != 'object') {
+                throw TypeError('Argument must be an object');
+              }
+              Temp.prototype = prototype;
+              var result = new Temp();
+              Temp.prototype = null;
+              return result;
+            };
+          })();
+        }
 
         var Subclasser = function() {
             function Subclasser() {}
@@ -445,7 +460,7 @@
             var Subclasser_prototype = Subclasser.prototype;
             Subclasser_prototype.stack_depth = 3;
             Subclasser_prototype.subclass = function() {
-                var sup, base, classes = [], others, v_, c, oc = Object_prototype.constructor, proto = function() {};
+                var sup, base, classes = [], others, v_, c, oc = Object_prototype.constructor;
                 each(arguments, function(i, arg) {
                     if (isFunction(arg)) classes.push(arg); else {
                         assert(!sup, "class prototype already specified");
@@ -453,9 +468,8 @@
                     }
                 });
                 base = classes[0] || Object;
-                proto.prototype = base.prototype;
                 others = classes.slice(1);
-                var stack_depth = this.stack_depth, c_prototype = new proto();
+                var stack_depth = this.stack_depth, c_prototype = Object.create(base.prototype);//new proto();
                 c = sup.constructor;
                 if (c == oc) {
                     c = base.prototype.constructor;
@@ -552,7 +566,6 @@
             return Subclasser;
         }();
         var subclasser = new Subclasser();
-
 
         var PublicSubclasser = function(superClass) {
             function constructor(name) {
