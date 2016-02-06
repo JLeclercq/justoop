@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                sourceMap: false,
+                sourceMap: true,
                 reserved:["f_", "_eval"],
                 banner: '/*! <%= pkg.name %> <%= pkg.version%> -r <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
