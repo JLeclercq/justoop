@@ -210,6 +210,7 @@
             return __global_namespaces.namespaces();
         }
         var debug_info = justoop.debug || isDefined(justoop.__loaded_packages__) && isDefined(package_name) && !justoop.__loaded_packages__[package_name].compressed;
+        debug_info = true;
         var stack_depth = 4;
         function getErrorStack(e) {
             if (e.stack) return e.stack; else return "unkown\nunkown\nunkown\nunkown";
@@ -268,7 +269,7 @@
                 target.__publish__(newAPI);
             } else {
                 each(newAPI, function(name, value) {
-                    if (name != "__publish__") {
+                    if (["__publish__", "__implements__"].indexOf(name) == -1) {
                         assert(!target[name], name, "already defined");
                         assert(isDefined(value), "undefined  value for", name);
                         if (debug_info && value && !value[js_line_property]) {
@@ -369,15 +370,24 @@
         }
         var Array_prototype = Array.prototype;
         var sliceArray = Array_prototype.slice;
-        function implements_(a, b) {
-            if (a[implements_method]) return a[implements_method](b); else {
-                var b_prototype;
-                if (isFunction(b)) b_prototype = b.prototype; else if (isObject(b)) b_prototype = b.constructor.prototype; else return false;
-                var a_prototype;
-                if (isFunction(a)) a_prototype = a.prototype; else if (isObject(a)) a_prototype = a; else return false;
-                return b_prototype.isPrototypeOf(a_prototype);
+        function implements_(a, b)
+        {
+            return a.__implements__(b);
+
+        }
+        function isSubclass(a, b) {
+            var a_prototype = a;
+            var b_prototype = b;
+            if (isFunction(a_prototype))
+                a_prototype = a_prototype.prototype;
+            if (isFunction(b_prototype))
+                b_prototype = b_prototype.prototype;
+            var res = a_prototype == b_prototype;
+            if (!res)
+            {
+                debugger;
             }
-            return false;
+            return res;
         }
         var interfaces_property = "__interfaces__", init_class_property = "__init__class__", subclasses_property = "__subclasses__", implements_method = "__implements__", super_property = "__super__", constuctor_property = "constructor", class_property = "__class__";
         var reserved_methods = [ constuctor_property, js_line_property, class_property, js_line_property, interfaces_property, super_property, subclasses_property , "__overrides__", "__implements__"];
@@ -387,7 +397,24 @@
         function __implements__(other) {
             var other_prototype = other;
             if (isFunction(other)) other_prototype = other.prototype;
-            assert(isFunction(this));
+            var res = other_prototype.isPrototypeOf(this);
+            if (!res)
+            {
+                var interfaces = this.constructor.__interfaces__;
+                if (interfaces)
+                {
+                    var len = interfaces.length;
+                    for (var i = 0; i < len; i++) {
+                        var proto = interfaces[i];
+                        res = proto == other_prototype
+                        if(res == true)
+                            break;
+
+                    }
+                }
+            }
+            return res;
+            //assert(isFunction(this));
             if (other_prototype == this.prototype || other_prototype.isPrototypeOf(this.prototype)) return true;
             var interfaces = this.__interfaces__;
             if (interfaces) {
@@ -401,7 +428,9 @@
             return false;
         }
         var Object_prototype = Object.prototype;
-
+        if (!Object_prototype[implements_method]) {
+            Object_prototype[implements_method] = __implements__;
+        }
         if (typeof Object.create != 'function') {
           Object.create = (function() {
             var Temp = function() {};
@@ -424,12 +453,15 @@
             function Subclasser() {}
             function copyMembers(target, source) {
                 for (var attr in source) {
-                    var m = source[attr];
-                    this._assignMember(target, attr, m, source);
+                    if ("__implements__".indexOf(attr) == -1)
+                    {
+                        var m = source[attr];
+                        this._assignMember(target, attr, m);
+                    }
                 }
                 return target;
             }
-            function setLevel(target, attrname, value, level)
+            function setLevel(target, attrname, level)
             {
                 //value.__level__ =  level;
                 //return;
@@ -439,21 +471,21 @@
 
             }
 
-            function getLevel(source, attrname, value)
+            function getLevel(source, attrname)
             {
-                //return value.__level__ ||0;
                 var overrides = source.__overrides__ || {};
                 var level =   overrides[attrname] || 0;
                 return level;
             }
-            function assignMember(target, attrname, value, source) {
+            function assignMember(target, attrname, value) {
+                /*
                 var old = target[attrname];
                 if (isDefined(old))
                 {
-                    var level = getLevel(source, attrname, old)+1;
-                    setLevel(target, attrname, value, level);
+                    var level = getLevel(source, attrname)+1;
+                    setLevel(target, attrname,  level);
 
-                }
+                }*/
                 target[attrname] = value;
             }
             var missing_new = "missing new operator";
@@ -477,24 +509,25 @@
                 v_ = this._createConstructor(c, c_prototype, missing_new);
                 c = v_;
                 c.prototype = c_prototype;
-                this._copyMembers(c_prototype, sup);
-                if (!c[implements_method]) {
+                //this._copyMembers(c_prototype, sup);
+                /*if (!c[implements_method]) {
                     c[implements_method] = __implements__;
                     c_prototype[implements_method] = bind(__implements__, c);
-                }
-                each(others, function(idx, other_) {
+                }*/
+                var _allsuper = [base].concat(others);
+                var o={};
+                each(_allsuper, function(idx, other_) {
                     var other = other_;
                     if (isFunction(other_)) other = other_.prototype;
                     if (isUndefined(c[interfaces_property])) {
                         c[interfaces_property] = [];
                     }
                     c[interfaces_property].push(other);
-                    var o = {};
-                    each(attributes(other), function(idx, name) {
+                    each(other, function(name) {
                         if (!contains(reserved_methods, name)) {
                             var fvalue , value;
                             fvalue = value = other[name];
-                            if (isFunction(fvalue))
+                            if (isFunction(fvalue) && idx)
                                 value = function(funcname, other) {
                                     var funcname = name;
                                     var proto = other;
@@ -502,29 +535,43 @@
                                         return proto[funcname].apply(this, arguments);
                                     };
                                 }(name, other);
-                            setLevel(other, name, value, getLevel(other, name, fvalue))
-                            o[name] = value;
+                            var origLevel = getLevel(other_, name);
+                            if (isDefined(o[name]))
+                            {
+                                    var targetLevel = getLevel(o, name);
+                                    if (origLevel > targetLevel)
+                                    {
+                                        o[name] = value;
+                                        setLevel(o, name, origLevel);
+                                    }
+
+                            }
+                            else
+                            {
+                                    o[name] = value;
+                                    setLevel(o, name,origLevel);
+                            }
                         }
                     });
-                    for (var attr in o) {
-
-                        var old_attr = c_prototype[attr];
-                        //if (!isFunction(old_attr))
-                        //{
-                        //    if (isUndefined(c_prototype[attr]))
-                        //        c_prototype[attr] = o[attr];
-                        //}
-                        //else
-                        //{
-                            var newLevel = getLevel(other, attr, o[attr]);
-                            if (isUndefined(c_prototype[attr]) || (newLevel> getLevel(c_prototype, attr, old_attr)))
-                            {
-                                c_prototype[attr] = o[attr];
-                                setLevel(c_prototype, attr, c_prototype[attr], newLevel+1);
-                            }
-                        //}
+                     for (var attr in o) {
+                        if (!contains(reserved_methods,attr))
+                        {
+                            var newLevel = getLevel(o, attr);
+                            setLevel(c, attr, newLevel);
+                            //if (isUndefined(c_prototype[attr]))
+                            c_prototype[attr] = o[attr];
+                        }
                     }
                 });
+
+                for (var attr in sup) {
+                    if (!contains(reserved_methods,attr))
+                    {
+                        var newLevel = getLevel(c, attr);
+                        c_prototype[attr] = sup[attr];
+                        setLevel(c, attr, newLevel+1);
+                    }
+                }
                 c_prototype.constructor = c;
                 c[super_property] = base.prototype;
                 if (c_prototype[init_class_property]) c_prototype[init_class_property].call(c);
@@ -825,7 +872,8 @@
             super_property: super_property,
             isObject: isObject,
             isClass: isClass,
-            implements_: implements_,
+            isSubclass: isSubclass,
+            implements_ : implements_,
             public_class: public_class,
             PublicSubclasser: PublicSubclasser
         });
