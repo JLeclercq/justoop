@@ -372,7 +372,7 @@
         var sliceArray = Array_prototype.slice;
         function implements_(a, b)
         {
-            return a.__implements__(b);
+            return __implements__(a, b);
 
         }
         function isSubclass(a, b) {
@@ -394,13 +394,13 @@
         function isObject(obj) {
             return obj === Object(obj);
         }
-        function __implements__(other) {
+        function __implements__(a, other) {
             var other_prototype = other;
             if (isFunction(other)) other_prototype = other.prototype;
-            var res = other_prototype.isPrototypeOf(this);
+            var res = other_prototype.isPrototypeOf(a);
             if (!res)
             {
-                var interfaces = this.constructor.__interfaces__;
+                var interfaces = a.constructor.__interfaces__;
                 if (interfaces)
                 {
                     var len = interfaces.length;
@@ -428,9 +428,6 @@
             return false;
         }
         var Object_prototype = Object.prototype;
-        if (!Object_prototype[implements_method]) {
-            Object_prototype[implements_method] = __implements__;
-        }
         if (typeof Object.create != 'function') {
           Object.create = (function() {
             var Temp = function() {};
