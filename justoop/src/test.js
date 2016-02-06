@@ -153,8 +153,7 @@ var j = require("./justoop");
         test.ok(cat instanceof Cat, "the cat is not an Cat");
         test.ok(cat instanceof Animal, "the cat is not an Animal");
         test.ok(cat instanceof Object, "the cat is not an Object");
-        debugger;
-
+        
         test.ok(cat.dopurr() == "purr", "cat doeas not purr: "+cat.dopurr() );
         var catWithoutTail = new Cat();
         catWithoutTail.tail = false;

@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        clean: ["dist/*"],
+        clean: ["dist/*", "../justoop.*"],
         concat: {
             options: {
                 separator: ';',
@@ -48,6 +48,16 @@ module.exports = function (grunt) {
         {
             test: ['src/test.js']
         },
+        copy:{
+            main:{
+                flatten: true,
+                cwd:'dist/',
+                src: '*',
+                expand: true ,
+                dest: '../',
+                filter: 'isFile'
+            }
+        },
         env: {
            test:{
                NODE_PATH:"./src/"
@@ -70,9 +80,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     //grunt.loadNpmTasks('grunt-browserify');
     //grunt.loadNpmTasks('grunt-browserify');
     //grunt.registerTask('test', [ ]);
 
-    grunt.registerTask('default', ['nodeunit', 'clean', 'concat', 'replace:first', 'uglify','replace:second']);
+    grunt.registerTask('default', ['nodeunit', 'clean', 'concat', 'replace:first', 'uglify','replace:second', 'copy']);
 };
