@@ -451,24 +451,11 @@
 
         var Subclasser = function() {
             function Subclasser() {}
-            function copyMembers(target, source) {
-                for (var attr in source) {
-                    if ("__implements__".indexOf(attr) == -1)
-                    {
-                        var m = source[attr];
-                        this._assignMember(target, attr, m);
-                    }
-                }
-                return target;
-            }
             function setLevel(target, attrname, level)
             {
-                //value.__level__ =  level;
-                //return;
                 var overrides = target.__overrides__ || {};
                 overrides[attrname] = level;
                 target.__overrides__  = overrides;
-
             }
 
             function getLevel(source, attrname)
@@ -476,17 +463,6 @@
                 var overrides = source.__overrides__ || {};
                 var level =   overrides[attrname] || 0;
                 return level;
-            }
-            function assignMember(target, attrname, value) {
-                /*
-                var old = target[attrname];
-                if (isDefined(old))
-                {
-                    var level = getLevel(source, attrname)+1;
-                    setLevel(target, attrname,  level);
-
-                }*/
-                target[attrname] = value;
             }
             var missing_new = "missing new operator";
             var Subclasser_prototype = Subclasser.prototype;
@@ -509,11 +485,6 @@
                 v_ = this._createConstructor(c, c_prototype, missing_new);
                 c = v_;
                 c.prototype = c_prototype;
-                //this._copyMembers(c_prototype, sup);
-                /*if (!c[implements_method]) {
-                    c[implements_method] = __implements__;
-                    c_prototype[implements_method] = bind(__implements__, c);
-                }*/
                 var _allsuper = [base].concat(others);
                 var o={};
                 each(_allsuper, function(idx, other_) {
@@ -557,9 +528,13 @@
                         if (!contains(reserved_methods,attr))
                         {
                             var newLevel = getLevel(o, attr);
-                            setLevel(c, attr, newLevel);
-                            //if (isUndefined(c_prototype[attr]))
-                            c_prototype[attr] = o[attr];
+                            var oldLevel =  getLevel(c, attr);
+                            if ((newLevel > oldLevel) ||(isUndefined(c_prototype[attr])))
+                            { 
+                                setLevel(c, attr, newLevel);
+                                if (idx)
+                                    c_prototype[attr] = o[attr];
+                            }   
                         }
                     }
                 });
@@ -590,17 +565,6 @@
                 c_prototype[class_property] = c;
                 return c;
             };
-            Subclasser_prototype._createFirstConstructor = function(oc, c_prototype, missing_new) {
-                assert(oc);
-                assert(c_prototype);
-                assert(missing_new);
-                return function() {
-                    assert(c_prototype.isPrototypeOf(this), missing_new);
-                    oc.apply(this, arguments);
-                };
-            };
-            Subclasser_prototype._copyMembers = copyMembers;
-            Subclasser_prototype._assignMember = assignMember;
             Subclasser_prototype._createConstructor = function(_c, c_prototype, missing_new) {
                 assert(_c);
                 assert(c_prototype);
@@ -637,10 +601,6 @@
                 var args = makeArray(arguments);
                 return __createConstructor.apply(this, [ "_createConstructor" ].concat(args));
             }
-            function _createFirstConstructor() {
-                var args = makeArray(arguments);
-                return __createConstructor.apply(this, [ "_createFirstConstructor" ].concat(args));
-            }
             var __class_registry = {};
             function allClasses() {
                 return map(__class_registry, function(e) {
@@ -658,7 +618,6 @@
             return subclass( {
                 constructor: constructor,
                 allClasses: allClasses,
-                _createFirstConstructor: _createFirstConstructor,
                 _createConstructor: _createConstructor,
                 subclass: _subclass,
                 stack_depth: 4

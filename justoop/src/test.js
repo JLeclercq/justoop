@@ -127,7 +127,6 @@ var j = require("./justoop");
                 function doSound() {
                     return Man.prototype.doSound.call(this) + " - " + Cat.prototype.doSound.call(this);
                 }
-                debugger;
                 return subclass({
                     doSuperPowers: doSuperPowers,
                     paws_number: 2,
@@ -154,6 +153,7 @@ var j = require("./justoop");
         test.ok(cat instanceof Cat, "the cat is not an Cat");
         test.ok(cat instanceof Animal, "the cat is not an Animal");
         test.ok(cat instanceof Object, "the cat is not an Object");
+        debugger;
 
         test.ok(cat.dopurr() == "purr", "cat doeas not purr: "+cat.dopurr() );
         var catWithoutTail = new Cat();
@@ -197,10 +197,8 @@ var j = require("./justoop");
         {
             return "purr changed";
         }
-        debugger;
         var res = catWoman.doWrite()
         test.ok(res == "write function changed", "found:"+ res);
-        debugger;
         test.ok(catWoman.dopurr() == "purr changed");
         Man.prototype.doWrite = oldWriteFunction;
         Cat.prototype.dopurr = oldpurr;
