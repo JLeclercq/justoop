@@ -127,7 +127,6 @@ var j = require("./justoop");
                 function doSound() {
                     return Man.prototype.doSound.call(this) + " - " + Cat.prototype.doSound.call(this);
                 }
-
                 return subclass({
                     doSuperPowers: doSuperPowers,
                     paws_number: 2,
@@ -135,6 +134,7 @@ var j = require("./justoop");
                 }, Cat, Man);
             })();
         }
+
         return CatWoman;
     }
 
@@ -153,6 +153,7 @@ var j = require("./justoop");
         test.ok(cat instanceof Cat, "the cat is not an Cat");
         test.ok(cat instanceof Animal, "the cat is not an Animal");
         test.ok(cat instanceof Object, "the cat is not an Object");
+        debugger;
 
         test.ok(cat.dopurr() == "purr", "cat doeas not purr: "+cat.dopurr() );
         var catWithoutTail = new Cat();
@@ -176,13 +177,14 @@ var j = require("./justoop");
         var man = new Man();
         var cat = new Cat();
         var catWoman = new CatWoman();
-        test.ok(catWoman.doSound() == man.doSound() + " - " + cat.doSound(), "Damn it!");
-        test.ok(implements_(catWoman, Man));
-        test.ok(implements_(catWoman, Cat));
-        test.ok(catWoman.paws_number == 2);
-        test.ok(catWoman.tail == true," tail:"+ catWoman.tail);
-        test.ok(catWoman instanceof Cat, "the cat is not a Cat");
-        test.ok(!(catWoman instanceof Man), "the cat is not a Man");
+        test.ok(catWoman.doSound() == man.doSound() + " - " + cat.doSound(), 'catWoman.doSound() == man.doSound() + " - " + cat.doSound()');
+        test.ok(implements_(catWoman, Man), "implements_(catWoman, Man)");
+        test.ok(implements_(catWoman, Animal), "implements_(catWoman, Animal)");
+        test.ok(implements_(catWoman, Cat), "implements_(catWoman, Cat)");
+        test.ok(catWoman.paws_number == 2, "catWoman.paws_number == 2");
+        test.ok(catWoman.tail == true,'catWoman.tail == true');
+        test.ok(catWoman instanceof Cat, "catWoman instanceof Cat");
+        test.ok(!(catWoman instanceof Man), "!(catWoman instanceof Man");
         //test.done();
         //return;
         var oldWriteFunction = Man.prototype.doWrite;
@@ -217,6 +219,19 @@ var j = require("./justoop");
         var catWoman3 = new CatWoman3;
         test.ok(!catWoman3.tail);
         test.ok(catWoman3.doSound() == "hello");
+        var CatWoman4 = subclass({}, Animal,  Man, Cat, CatWoman2);
+        var man = new Man;
+        var catWoman4 = new CatWoman4;
+        test.ok(catWoman4.doSound() == man.doSound());
+        var CatWoman5 = subclass({doSound : function(){return "catwoman5"}}, Animal,  Man, Cat, CatWoman2);
+        var catWoman5 = new CatWoman5;
+        test.ok(catWoman5.doSound() == "catwoman5");
+        var CatWoman6 = subclass({}, Animal,  Man, Cat, CatWoman5);
+        var catWoman6 = new CatWoman6;
+        test.ok(catWoman6.doSound() == "catwoman5", catWoman6.doSound());
+
+
+
         test.done()
     }
     publish(exports, {
