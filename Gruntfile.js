@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        clean: ["dist/*", "../justoop.*"],
+        clean: ["dist/*", "justoop.*.js", "justoop.*.map"],
         concat: {
             options: {
                 separator: ';',
@@ -54,7 +54,7 @@ module.exports = function (grunt) {
                 cwd:'dist/',
                 src: '*',
                 expand: true ,
-                dest: '../',
+                dest: '.',
                 filter: 'isFile'
             }
         },
