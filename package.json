@@ -2,7 +2,7 @@
   "name": "justoop",
   "version": "0.1.4",
   "description": "Object Oriented Javascript Framework",
-  "main": "./src/justoop.js",
+  "main": "src/justoop.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/onotelli/justoop.git"
@@ -19,9 +19,6 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-text-replace": "^0.4.0",
     "nodeunit": "^0.9.0"
-  },
-  "dependencies": {
-    "underscore": ">=1.8.2"
   },
   "scripts": {
     "test": "test"
