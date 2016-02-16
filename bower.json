@@ -1,0 +1,25 @@
+{
+  "name": "justoop",
+  "description": "Object Oriented Javascript Framework",
+  "main": "src/justoop.js",
+  "authors": [
+    "Oreste Notelli"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "justoop",
+    "classes",
+    "inheritance"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "homepage": "https://justoop.tk/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
