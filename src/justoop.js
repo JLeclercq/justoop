@@ -385,7 +385,7 @@
             var res = a_prototype == b_prototype;
             if (!res)
             {
-                debugger;
+                res = b_prototype.isPrototypeOf(a_prototype);
             }
             return res;
         }
