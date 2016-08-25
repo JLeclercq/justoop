@@ -322,7 +322,7 @@
                 var oldLog = console.constructor.prototype.log;
                 if (oldLog != newLog)
                 {
-                        console.constructor.prototype.log = newLog;
+                        console.log = newLog;
                 }
                 log = bind(console.log, console);
             } catch (e) {

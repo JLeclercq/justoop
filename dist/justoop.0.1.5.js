@@ -1,4 +1,4 @@
-/*  justoop 0.1.4 . Lightweight Object Oriented Library For Javascript */
+/*  justoop 0.1.5 . Lightweight Object Oriented Library For Javascript */
 "use strict";
 
 (function() {
@@ -323,7 +323,7 @@
                 var oldLog = console.constructor.prototype.log;
                 if (oldLog != newLog)
                 {
-                        console.constructor.prototype.log = newLog;
+                        console.log = newLog;
                 }
                 log = bind(console.log, console);
             } catch (e) {
@@ -386,7 +386,7 @@
             var res = a_prototype == b_prototype;
             if (!res)
             {
-                debugger;
+                res = b_prototype.isPrototypeOf(a_prototype);
             }
             return res;
         }
