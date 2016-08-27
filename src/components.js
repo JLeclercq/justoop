@@ -15,14 +15,20 @@
         ObjectEx = get(p.ObjectEx),
         implements_ = get(p.implements_),
         extend = get(j.extend),
-        data_type_attr = "justoop-type", 
+        isSubclass = get(p.isSubclass),
+        hasMembers = get(p.hasMembers),
+        isFunction = get(p.isFunction),
+        map = get(p.map),
+        data_type_attr = justoop.data_type_attr || "type", 
         component_attr = "data-" + data_type_attr, 
-        data_instance_attr = "justoop-component", 
-        data_name_attr = "justoop-name", 
-        component_attr_name = "data-" +data_name_attr, 
-        publish = justoop.publish,
+        data_instance_attr = justoop.data_instance_attr || "component", 
+        data_name_attr = justoop.data_name_attr || "name", 
+        component_attr_name = "data-" + data_name_attr, 
+        publish = justoop.publish, 
         component_instance_attr = "data-" + data_instance_attr, 
-        attachedClass ="justoop-cmp-attached";
+        attachedClass = justoop.attachedClass || "cmp-attached", 
+        initializedClass = justoop.initializedClass || "no-initialized", 
+        noInitializedClass = justoop.noInitializedClass || "initialized";
 
         var ComponentInitializer = (function() {
 
@@ -57,7 +63,7 @@
                                 }
                                 
                         });
-                        parentElem.removeClass("justoop-no-initialized").addClass("justoop-initialized");
+                        parentElem.removeClass(noInitializedClass).addClass(initializedClass);
                         return result;
                 }
                 
@@ -68,7 +74,9 @@
                 
                 function allComponents (parentElem)
                 {
-                        return parentElem.find(this.componentsSelector()).not("."+attachedClass);
+                        
+                    return parentElem.add(parentElem.find(this.componentsSelector()).not("." + attachedClass).not("." + initializedClass));
+                    //return parentElem.find(this.componentsSelector()).not("."+attachedClass);
                 }
 
                 function getComponentName(element)
@@ -160,7 +168,7 @@
                         jelement.data(ci.data_instance_attr, this);
                         jelement.addClass(attachedClass);
 
-                        this.children = this.initChildren(options);
+                        this.subComponents = this.initChildren(options);
                         
                         setTimeout(bound,0);
                          
@@ -184,9 +192,9 @@
                 
                 function createCSSClass ()
         {
-                        var c = this;
-                        if (!isClass(this))
-                c = this.constructor;
+                var c = this;
+                if (!isClass(this))
+                    c = this.constructor;
                         var clss=[];
                         if (c.__name__)
                                 clss.push(prepareCssName(c.__name__));
@@ -198,7 +206,7 @@
                 if (superClassProto)
                 {
                         var superClass = superClassProto.constructor;
-                        if ( implements_(superClass, Component))
+                        if ( isSubclass(superClass, Component))
                                         {
                                                 var superClassName  = superClass.__name__;
                                                 if (superClassName)
@@ -243,7 +251,7 @@
 
                 function onComponentConstructed()
                 {
-                        this._el.removeClass("justoop-no-initialized").addClass("justoop-initialized");
+                        this._el.removeClass(noInitializedClass).addClass(initializedClass);
                 }
                 
                 var Class_ =  public_class("justoop.Component", ObjectEx, {
@@ -251,7 +259,9 @@
                         setupCssClasses : setupCssClasses,
                         findAll:findAll,
                         name : name,
-                        parentComponent: function(){return this.parent().closest(".justoop-component").component()},
+                        parentComponent: function(){
+                            var cssComponentClass = prepareCssName("justoop.Component");
+                            return this.parent().closest(cssComponentClass).component()},
                         initChildren : initChildren,
                         componentInitializer : componentInitializer,
                         createCSSClass : createCSSClass,
@@ -262,18 +272,27 @@
                         }
                 });
                 extend(Class_, {createCSSClass:createCSSClass, findAll:findAll});
-                each(["css", "append", "remove", "addClass", "removeClass","toggleClass","hasClass",
-                                "data", "attr", "prop", "show", "hide", "closest",
-                                "children", "width", "height", "text", "html","submit",
-                                "val","change","click", "on", "off", "find", "parent",
-                                "parents", "parentsUntil"], function (i, name){
-                        
-                        Class_.prototype[name] = function ()
+                var jqueryAttrs = [];
+                var jQuery_prototype = jQuery.fn;
+                for (var ee in jQuery_prototype) 
+                {
+                    jqueryAttrs.push(ee);
+                }
+                ;
+                each(jqueryAttrs, function(i, name) {
+                    if ((["constructor"].indexOf(name) == -1) && !Class_.prototype[name]) 
+                    {
+                        if (isFunction(jQuery_prototype[name]))
                         {
+                            Class_.prototype[name] = function() 
+                            {
                                 var args = makeArray(arguments);
                                 var el = this.el();
                                 return el[name].apply(el, args);
+                            }
                         }
+                    }
+
                 });
                 return Class_;
         })();
@@ -325,15 +344,38 @@
         var res = p.defaultCmpInitializer.initComponents(p.defaultComponentsRoot);
         publish(p, {page: res});
     }
+
+
+
+    function getListenerMembers(nullListener) {
+        return map(nullListener, function(i, e) {
+            return e;
+        });
+    }
+
+    function checkListener(obj, nullListener) {
+        var memberList = getListenerMembers(nullListener);
+        assert(hasMembers(memberList, obj), obj.__js_line__,
+                " has not all required methods", memberList.join(","));
+    }
+
+
         
+    p.data_type_attr = data_type_attr;
+    p.data_name_attr = data_name_attr;
+    p.attachedClass = attachedClass;
+    p.initializedClass = initializedClass;
+    p.noInitializedClass = noInitializedClass;
     
-        publish(p,{data_type_attr:data_type_attr,
-                                 data_name_attr:data_name_attr,
-                                 unCamelCase:unCamelCase,
+    
+        publish(p,{         unCamelCase:unCamelCase,
                                  main: main,
+                                 Component:Component,
+                                 checkListener:checkListener,
                                  defaultComponentsRoot : defaultComponentsRoot,
                                  defaultCmpInitializer : defaultCmpInitializer,
                                  camelCase : camelCase,
+                                 $: $,
                                  component:component});
         
 
